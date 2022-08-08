@@ -1,10 +1,10 @@
 package alessandrosalerno.bialetti;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
 
 /*
  * A wrapper for Java's TCP Socket Class
@@ -16,9 +16,9 @@ public class BialettiConnection {
      */
     private Socket connectionSocket;
     /*
-     * The connection's input stream
+     * The connection's input stream reader
      */
-    private InputStreamReader inputStreamReader;
+    private BufferedReader inputStreamReader;
     /*
      * The connection's output stream
      */
@@ -54,44 +54,23 @@ public class BialettiConnection {
 
     /*
      * Reads from the input stream and returns everything as a byte array
-     * Throws IOException
      */
-    public byte[] receive() throws IOException {
-        int read;                                   // Current character (Read from the stream)
-        StringBuilder buffer = new StringBuilder(); // Buffer
+    public String receive() throws IOException {
+        String data = "<NO-DATA>";    // Buffer for the input stream reader
 
-        // Read until the end of the stream is reached
-        while ((read = inputStreamReader.read()) != -1) {
-            // Appends the current character to the buffer
-            buffer.append((char) read);
-        }
+        // Reads an entire line from the stream
+        data = inputStreamReader.readLine();
 
-        // Casts the buffer to a byte array and returns it
-        return buffer.toString().getBytes();
+        // Returns the received data
+        return data;
     }
 
     /*
-     * Sends a bytearray
+     * Sends a string
      */
-    public void send(byte[] data) {
-        // Casts the bytearray to a string and sends it via the socket
-        outputPrintWriter.print(Arrays.toString(data));
-    }
-
-    /*
-     * Closes the TCP Socket Connection
-     */
-    public void close() {
-        try {
-            // Close connection to the desired address and port
-            connectionSocket.close();
-        }
-
-        // Exception handler
-        catch (Exception e) {
-            System.out.println("[-] Socket Error");
-            e.printStackTrace();
-        }
+    public void send(String data) {
+        // Sends the string
+        outputPrintWriter.println(data);
     }
 
     /*
@@ -105,7 +84,7 @@ public class BialettiConnection {
      */
     private void initializeConnection() {
         try {
-            inputStreamReader = new InputStreamReader(connectionSocket.getInputStream());
+            inputStreamReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             outputPrintWriter = new PrintWriter(connectionSocket.getOutputStream(), true);
         }
 
