@@ -1,15 +1,13 @@
-package alessandrosalerno.bialetti.server;
+package alessandrosalerno.bialetti;
 
 import alessandrosalerno.bialetti.BialettiConnection;
-import alessandrosalerno.bialetti.client.BialettiClient;
-
-import java.net.SocketException;
+import alessandrosalerno.bialetti.server.BialettiServer;
 
 /*
  * The standard interface for a BialettiClientHandler
  * @author Alessandro-Salerno
  */
-public interface BialettiClientHandler {
+public interface BialettiEventHandler {
     /*
      * What happens when the client connects
      * @param client The BialettiConnection instance of the target client
