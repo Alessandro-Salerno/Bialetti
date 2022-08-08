@@ -18,6 +18,10 @@ public class BialettiServer {
      */
     protected final BialettiConnectionEventHandler connectionEventHandler;
     /*
+     *
+     */
+    protected final BialettiServerEventHandler serverEventHandler;
+    /*
      *  List of connected clients
      */
     protected List<BialettiConnection> connectedClients;
@@ -34,20 +38,38 @@ public class BialettiServer {
      */
     protected Thread listenThread;
 
-
     /*
      * Default constructor
      * @param port The port on which the server is hosted
      * @param clientHandler BialettiConnectionEventHandler instance
+     * @param serverHandler BialettiServerEventHandler instance
      */
-    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler) {
+    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler, BialettiServerEventHandler serverHandler) {
         serverPort             = port;
         connectionEventHandler = clientHandler;
+        serverEventHandler     = serverHandler;
         connectedClients       = new ArrayList<>();
         serverThreads          = new ArrayList<>();
 
         // Start the server
         start();
+    }
+
+    /*
+     * Secondary constructor
+     */
+    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler) {
+        this(port, clientHandler, new BialettiServerEventHandler() {
+            @Override
+            public void onStart(BialettiServer server) throws Exception {
+                System.out.println("[+] Server started");
+            }
+
+            @Override
+            public void onStop(BialettiServer server) throws Exception {
+                System.out.println("[+] Server stopped");
+            }
+        });
     }
 
     /*
@@ -78,6 +100,16 @@ public class BialettiServer {
         // Clear threads list and close the server socket
         serverThreads.clear();
         serverSocket.close();
+
+        try {
+            // Call handler method
+            serverEventHandler.onStart(this);
+        }
+
+        // Exception handler
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -103,6 +135,16 @@ public class BialettiServer {
         // Create thread to listen to incoming requests
         listenThread = new Thread(this::listen);
         listenThread.start();
+
+        try {
+            // Call handler method
+            serverEventHandler.onStart(this);
+        }
+
+        // Exception handler
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*
