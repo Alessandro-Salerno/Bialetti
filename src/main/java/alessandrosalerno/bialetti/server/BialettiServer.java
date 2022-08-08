@@ -26,6 +26,10 @@ public class BialettiServer {
      */
     protected List<BialettiServerThread> serverThreads;
     /*
+     * The SocketServer instance
+     */
+    protected ServerSocket serverSocket;
+    /*
      * Thread on which the server's listen method is run
      */
     protected Thread listenThread;
@@ -42,6 +46,60 @@ public class BialettiServer {
         connectedClients       = new ArrayList<>();
         serverThreads          = new ArrayList<>();
 
+        // Start the server
+        start();
+    }
+
+    /*
+     * Closes a connection to a client
+     * @param connection The BialettiConnection instance of the client
+     */
+    public void closeConnection(BialettiConnection connection) throws IOException {
+        connection.getSocket().close();
+        BialettiServerThread sThread = serverThreads.get(connectedClients.indexOf(connection));
+        connectedClients.remove(connection);
+        serverThreads.remove(sThread);
+        connectionEventHandler.onClose(connection,this);
+        sThread.interrupt();
+    }
+
+    /*
+     * Stops the server
+     */
+    public void stop() throws IOException {
+        // Clear list of clients
+        connectedClients.clear();
+
+        // Stop all threads
+        for (BialettiServerThread sThread : serverThreads) {
+            sThread.interrupt();
+        }
+
+        // Clear threads list and close the server socket
+        serverThreads.clear();
+        serverSocket.close();
+    }
+
+    /*
+     * Starts the server
+     * Creates ServerSocket instance
+     */
+    protected void start() {
+        if (serverSocket != null && serverSocket.isClosed()) {
+            serverSocket = null;
+            start();
+        }
+
+        try {
+            // Create server socket
+            serverSocket = new ServerSocket(serverPort);
+        }
+
+        // IOException handler
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Create thread to listen to incoming requests
         listenThread = new Thread(this::listen);
         listenThread.start();
@@ -51,8 +109,7 @@ public class BialettiServer {
      * Listens for incoming connections
      */
     protected void listen() {
-        // Create server socket
-        try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
+        try {
             // Accept connections forever
             while (true) {
                 // Wait for a client to connect and instantiate a BialettiConnection for it
@@ -74,19 +131,6 @@ public class BialettiServer {
         catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /*
-     * Closes a connection to a client
-     * @param connection The BialettiConnection instance of the client
-     */
-    public void closeConnection(BialettiConnection connection) throws IOException {
-        connection.getSocket().close();
-        BialettiServerThread sThread = serverThreads.get(connectedClients.indexOf(connection));
-        connectedClients.remove(connection);
-        serverThreads.remove(sThread);
-        connectionEventHandler.onClose(connection,this);
-        sThread.interrupt();
     }
 
     /*
