@@ -1,7 +1,6 @@
 package alessandrosalerno.bialetti.server;
 
 import alessandrosalerno.bialetti.BialettiConnection;
-import alessandrosalerno.bialetti.BialettiEventHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -37,7 +36,6 @@ public class BialettiServer {
      * @param port The port on which the server is hosted
      * @param clientHandler BialettiClientHandler instance
      */
-    @SuppressWarnings("unchecked")
     public BialettiServer(int port, BialettiEventHandler clientHandler) {
         serverPort            = port;
         bialettiEventHandler = clientHandler;
@@ -56,15 +54,6 @@ public class BialettiServer {
     }
 
     /*
-     * Secondary constructor (Used with named classes)
-     * @param port The port on which the server is hosted
-     * @param handlerClass The BialettiClientHandler class itself
-     */
-    public BialettiServer(int port, Class<BialettiEventHandler> handlerClass) throws Exception {
-        this(port, handlerClass.getDeclaredConstructor().newInstance());
-    }
-
-    /*
      * Listens for incoming connections
      */
     protected void listen() {
@@ -75,12 +64,15 @@ public class BialettiServer {
                 // Wait for a client to connect and instantiate a BialettiConnection for it
                 BialettiConnection newClient = new BialettiConnection(serverSocket.accept());
 
+                // Create new thread
                 BialettiServerThread sThread = new BialettiServerThread(newClient, this, bialettiEventHandler);
-                sThread.start();
 
                 // Append client to the list of connected clients and start the thread
                 connectedClients.add(newClient);
                 serverThreads.add(sThread);
+
+                // Start handler thread
+                sThread.start();
             }
         }
 
@@ -98,7 +90,7 @@ public class BialettiServer {
         connection.getSocket().close();
         BialettiServerThread sThread = serverThreads.get(connectedClients.indexOf(connection));
         connectedClients.remove(connection);
-        bialettiEventHandler.onClose(connection, this);
+        bialettiEventHandler.onClose(connection,this);
         sThread.interrupt();
         serverThreads.remove(sThread);
     }

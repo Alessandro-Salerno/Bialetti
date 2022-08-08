@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti;
+package alessandrosalerno.bialetti.server;
 
 import alessandrosalerno.bialetti.BialettiConnection;
 import alessandrosalerno.bialetti.server.BialettiServer;
