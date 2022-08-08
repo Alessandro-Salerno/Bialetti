@@ -21,7 +21,7 @@ class BialettiServerThread extends Thread {
     /*
      * The event handler
      */
-    private final BialettiEventHandler eventHandler;
+    private final BialettiConnectionEventHandler eventHandler;
 
     /*
      * Default constructor
@@ -29,7 +29,7 @@ class BialettiServerThread extends Thread {
      * @param server The BialettiServer instance of the host server
      * @param handler The BialettiEventHandler instance for the target server
      */
-    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiEventHandler handler) {
+    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiConnectionEventHandler handler) {
         connectedClient = client;
         hostServer      = server;
         eventHandler    = handler;

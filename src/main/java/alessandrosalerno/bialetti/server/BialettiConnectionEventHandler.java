@@ -1,13 +1,12 @@
 package alessandrosalerno.bialetti.server;
 
 import alessandrosalerno.bialetti.BialettiConnection;
-import alessandrosalerno.bialetti.server.BialettiServer;
 
 /*
- * The standard interface for a BialettiClientHandler
+ * The standard interface for a BialettiConnectionEventHandler
  * @author Alessandro-Salerno
  */
-public interface BialettiEventHandler {
+public interface BialettiConnectionEventHandler {
     /*
      * What happens when the client connects
      * @param client The BialettiConnection instance of the target client
