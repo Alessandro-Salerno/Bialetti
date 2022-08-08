@@ -43,13 +43,7 @@ public class BialettiServer {
         serverThreads         = new ArrayList<>();
 
         // Create thread to listen to incoming requests
-        listenThread = new Thread() {
-            @Override
-            public void run() {
-                listen();
-            }
-        };
-
+        listenThread = new Thread(this::listen);
         listenThread.start();
     }
 
@@ -90,9 +84,9 @@ public class BialettiServer {
         connection.getSocket().close();
         BialettiServerThread sThread = serverThreads.get(connectedClients.indexOf(connection));
         connectedClients.remove(connection);
+        serverThreads.remove(sThread);
         bialettiEventHandler.onClose(connection,this);
         sThread.interrupt();
-        serverThreads.remove(sThread);
     }
 
     /*
