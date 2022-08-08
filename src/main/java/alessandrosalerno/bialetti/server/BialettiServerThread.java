@@ -22,17 +22,23 @@ class BialettiServerThread extends Thread {
      * The event handler
      */
     private final BialettiConnectionEventHandler eventHandler;
+    /*
+     * The cexception handler
+     */
+    private final BialettiServerExceptionHandler exceptionHandler;
 
     /*
      * Default constructor
      * @param client The BialettiConnection instance of the target client
      * @param server The BialettiServer instance of the host server
      * @param handler The BialettiEventHandler instance for the target server
+     * @param exHandler The BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiConnectionEventHandler handler) {
-        connectedClient = client;
-        hostServer      = server;
-        eventHandler    = handler;
+    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiConnectionEventHandler handler, BialettiServerExceptionHandler exHandler) {
+        connectedClient  = client;
+        hostServer       = server;
+        eventHandler     = handler;
+        exceptionHandler = exHandler;
     }
 
     @Override
@@ -50,21 +56,23 @@ class BialettiServerThread extends Thread {
 
         // Do nothing if an interrupt is triggered
         catch (InterruptedException e) {
-            e.printStackTrace();
             return;
         }
 
         // Exception handler
         catch (Exception e) {
             try {
+                // Call handler method
+                exceptionHandler.onGenericException(e);
+
                 // Close socket connection
                 hostServer.closeConnection(connectedClient);
             }
 
             // Exception handler
             catch (IOException ioException) {
-                System.out.println("[-] Unable to close connection");
-                ioException.printStackTrace();
+                // Call handler method
+                exceptionHandler.onIOException(ioException);
             }
         }
     }
