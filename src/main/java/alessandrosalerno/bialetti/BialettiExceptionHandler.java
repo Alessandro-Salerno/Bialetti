@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti.server;
+package alessandrosalerno.bialetti;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import java.io.IOException;
  * The standard interface for a BialettiServerExceptionHandler
  * @author Alessandro-Salerno
  */
-public interface BialettiServerExceptionHandler {
+public interface BialettiExceptionHandler {
     /*
      * What happens when a generic exception is thrown
      * @param exception The exception itself

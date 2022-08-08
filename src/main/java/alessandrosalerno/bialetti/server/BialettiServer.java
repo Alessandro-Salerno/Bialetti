@@ -1,6 +1,7 @@
 package alessandrosalerno.bialetti.server;
 
 import alessandrosalerno.bialetti.BialettiConnection;
+import alessandrosalerno.bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,7 +25,7 @@ public class BialettiServer {
     /*
      * The event handler for server exceptions
      */
-    protected final BialettiServerExceptionHandler exceptionHandler;
+    protected final BialettiExceptionHandler exceptionHandler;
     /*
      *  List of connected clients
      */
@@ -49,7 +50,7 @@ public class BialettiServer {
      * @param serverHandler BialettiServerEventHandler instance
      * @param exHandler The server's exception handler
      */
-    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler, BialettiServerEventHandler serverHandler, BialettiServerExceptionHandler exHandler) {
+    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler, BialettiServerEventHandler serverHandler, BialettiExceptionHandler exHandler) {
         serverPort             = port;
         connectionEventHandler = clientHandler;
         serverEventHandler     = serverHandler;
@@ -75,7 +76,7 @@ public class BialettiServer {
             public void onStop(BialettiServer server) throws Exception {
                 System.out.println("[+] Server stopped");
             }
-        }, new BialettiServerExceptionHandler() {
+        }, new BialettiExceptionHandler() {
             @Override
             public void onGenericException(Exception exception) {
                 exception.printStackTrace();

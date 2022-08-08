@@ -1,6 +1,7 @@
 package alessandrosalerno.bialetti.server;
 
 import alessandrosalerno.bialetti.BialettiConnection;
+import alessandrosalerno.bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ class BialettiServerThread extends Thread {
     /*
      * The cexception handler
      */
-    private final BialettiServerExceptionHandler exceptionHandler;
+    private final BialettiExceptionHandler exceptionHandler;
 
     /*
      * Default constructor
@@ -34,7 +35,7 @@ class BialettiServerThread extends Thread {
      * @param handler The BialettiEventHandler instance for the target server
      * @param exHandler The BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiConnectionEventHandler handler, BialettiServerExceptionHandler exHandler) {
+    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiConnectionEventHandler handler, BialettiExceptionHandler exHandler) {
         connectedClient  = client;
         hostServer       = server;
         eventHandler     = handler;
