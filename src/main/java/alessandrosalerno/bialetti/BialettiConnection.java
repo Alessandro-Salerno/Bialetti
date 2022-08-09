@@ -1,9 +1,9 @@
 package alessandrosalerno.bialetti;
 
-import java.io.BufferedReader;
+import alessandrosalerno.bialetti.util.BialettiInputStreamReader;
+import alessandrosalerno.bialetti.util.BialettiPrintWriter;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 /*
@@ -18,11 +18,11 @@ public class BialettiConnection {
     /*
      * The connection's input stream reader
      */
-    private BufferedReader inputStreamReader;
+    private BialettiInputStreamReader inputStreamReader;
     /*
      * The connection's output stream
      */
-    private PrintWriter outputPrintWriter;
+    private BialettiPrintWriter outputPrintWriter;
 
     /*
      * Client-side constructor
@@ -59,7 +59,7 @@ public class BialettiConnection {
         String data = "<NO-DATA>";    // Buffer for the input stream reader
 
         // Reads an entire line from the stream
-        data = inputStreamReader.readLine();
+        data = inputStreamReader.readall();
 
         // Returns the received data
         return data;
@@ -70,13 +70,9 @@ public class BialettiConnection {
      */
     public void send(String data) {
         // Sends the string
-        outputPrintWriter.println(data);
+        outputPrintWriter.print(data);
+        outputPrintWriter.flush();
     }
-
-    /*
-     * Getter for the Java TCP Socket Instance
-     */
-    public Socket getSocket() { return connectionSocket; }
 
     /*
      * Initialization method for the connection
@@ -84,8 +80,8 @@ public class BialettiConnection {
      */
     private void initializeConnection() {
         try {
-            inputStreamReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-            outputPrintWriter = new PrintWriter(connectionSocket.getOutputStream(), true);
+            inputStreamReader = new BialettiInputStreamReader(connectionSocket.getInputStream());
+            outputPrintWriter = new BialettiPrintWriter(connectionSocket.getOutputStream());
         }
 
         // Exception handler
@@ -93,4 +89,9 @@ public class BialettiConnection {
             e.printStackTrace();
         }
     }
+
+    /*
+     * Getter for the Java TCP Socket Instance
+     */
+    public Socket getSocket() { return connectionSocket; }
 }
