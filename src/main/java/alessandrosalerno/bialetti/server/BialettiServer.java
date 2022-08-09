@@ -120,7 +120,7 @@ public class BialettiServer {
 
         try {
             // Call handler method
-            serverEventHandler.onStart(this);
+            serverEventHandler.onStop(this);
         }
 
         // Exception handler
