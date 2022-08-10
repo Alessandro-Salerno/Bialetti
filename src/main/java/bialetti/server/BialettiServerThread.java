@@ -56,11 +56,6 @@ class BialettiServerThread extends Thread {
             }
         }
 
-        // Do nothing if an interrupt is triggered
-        catch (InterruptedException e) {
-            return;
-        }
-
         // SocketException handler
         catch (SocketException e) {
             // Call handler method
