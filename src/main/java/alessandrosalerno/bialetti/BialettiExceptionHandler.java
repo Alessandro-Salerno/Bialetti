@@ -1,6 +1,7 @@
 package alessandrosalerno.bialetti;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 /*
  * The standard interface for a BialettiServerExceptionHandler
@@ -17,4 +18,9 @@ public interface BialettiExceptionHandler {
      * @param ioException The IO Exception itself
      */
     void onIOException(IOException ioException);
+    /*
+     * What happens when a Socket Exception is thrown
+     * @param socketException The Socket Exception itself
+     */
+    void onSocketException(SocketException socketException);
 }

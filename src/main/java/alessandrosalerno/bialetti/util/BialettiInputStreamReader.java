@@ -21,14 +21,18 @@ public class BialettiInputStreamReader extends InputStreamReader {
      * Reads the entire message
      */
     public String readall() throws IOException {
-        int character;                              // The current character
-        StringBuilder buffer = new StringBuilder(); // The buffer
+        char[] buffer = new char[1024];             // Temp buffer
+        StringBuilder data = new StringBuilder();   // Final output
+        int numRead;                                // Number of characters read from the stream
 
-        // Reads from the input stream until a 0 is found
-        while ((character = read()) != 0) {
-            buffer.append((char) character);
-        }
+        do {
+            // Read from the stream
+            numRead = read(buffer, 0, buffer.length);
 
-        return buffer.toString();
+            // If the stream was read successfully, then append the temp buffer to the final string
+            if (numRead != -1) data.append(buffer, 0, numRead); else break;
+        } while (numRead == buffer.length);
+
+        return data.toString();
     }
 }

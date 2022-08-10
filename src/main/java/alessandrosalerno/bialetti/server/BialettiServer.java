@@ -5,6 +5,7 @@ import alessandrosalerno.bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,11 @@ public class BialettiServer {
             @Override
             public void onIOException(IOException ioException) {
                 ioException.printStackTrace();
+            }
+
+            @Override
+            public void onSocketException(SocketException socketException) {
+                socketException.printStackTrace();
             }
         });
     }

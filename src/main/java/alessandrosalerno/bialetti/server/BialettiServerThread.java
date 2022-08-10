@@ -4,6 +4,7 @@ import alessandrosalerno.bialetti.BialettiConnection;
 import alessandrosalerno.bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 /*
  * Class that extends java s standard Thread
@@ -58,6 +59,12 @@ class BialettiServerThread extends Thread {
         // Do nothing if an interrupt is triggered
         catch (InterruptedException e) {
             return;
+        }
+
+        // SocketException handler
+        catch (SocketException e) {
+            // Call handler method
+            exceptionHandler.onSocketException(e);
         }
 
         // Exception handler

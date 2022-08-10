@@ -21,6 +21,6 @@ public class BialettiPrintWriter extends PrintWriter {
      */
     @Override
     public void print(String s) {
-        super.print(s + '\0');
+        super.print(s);
     }
 }
