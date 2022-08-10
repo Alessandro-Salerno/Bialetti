@@ -3,9 +3,6 @@ package bialetti.server;
 import bialetti.BialettiConnection;
 import bialetti.BialettiExceptionHandler;
 
-import java.io.IOException;
-import java.net.SocketException;
-
 /*
  * Class that extends java s standard Thread
  * Used to handle clients
@@ -48,34 +45,25 @@ class BialettiServerThread extends Thread {
         try {
             // Call initial connection method
             eventHandler.onConnect(connectedClient, hostServer);
-
-            // Main handler loop
-            while (!Thread.interrupted()) {
-                // Call handler method
-                eventHandler.handle(connectedClient, hostServer);
-            }
-        }
-
-        // SocketException handler
-        catch (SocketException e) {
-            // Call handler method
-            exceptionHandler.onSocketException(e);
         }
 
         // Exception handler
         catch (Exception e) {
+            // Call handler method
+            exceptionHandler.raise(e);
+        }
+
+        // Main handler loop
+        while (!Thread.interrupted()) {
             try {
                 // Call handler method
-                exceptionHandler.onGenericException(e);
-
-                // Close socket connection
-                hostServer.closeConnection(connectedClient);
+                eventHandler.handle(connectedClient, hostServer);
             }
 
             // Exception handler
-            catch (IOException ioException) {
-                // Call handler method
-                exceptionHandler.onIOException(ioException);
+            catch (Exception e) {
+                // Call exception handler method
+                exceptionHandler.raise(e, connectedClient, hostServer);
             }
         }
     }

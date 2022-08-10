@@ -5,7 +5,6 @@ import bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,22 +76,7 @@ public class BialettiServer {
             public void onStop(BialettiServer server) throws Exception {
                 System.out.println("[+] Server stopped");
             }
-        }, new BialettiExceptionHandler() {
-            @Override
-            public void onGenericException(Exception exception) {
-                exception.printStackTrace();
-            }
-
-            @Override
-            public void onIOException(IOException ioException) {
-                ioException.printStackTrace();
-            }
-
-            @Override
-            public void onSocketException(SocketException socketException) {
-                socketException.printStackTrace();
-            }
-        });
+        }, new BialettiExceptionHandler() {});
     }
 
     /*
@@ -132,7 +116,7 @@ public class BialettiServer {
         // Exception handler
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.onGenericException(e);
+            exceptionHandler.raise(e, this);
         }
     }
 
@@ -154,8 +138,7 @@ public class BialettiServer {
 
         // IOException handler
         catch (IOException e) {
-            // Call handler method
-            exceptionHandler.onIOException(e);
+            e.printStackTrace();
         }
 
         // Create thread to listen to incoming requests
@@ -170,7 +153,7 @@ public class BialettiServer {
         // Exception handler
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.onGenericException(e);
+            exceptionHandler.raise(e, this);
         }
     }
 
@@ -199,7 +182,7 @@ public class BialettiServer {
         // Exception handler
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.onGenericException(e);
+            exceptionHandler.raise(e, this);
         }
     }
 
