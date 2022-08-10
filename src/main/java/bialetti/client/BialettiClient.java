@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti.client;
+package bialetti.client;
 
 public class BialettiClient {
     public BialettiClient() {

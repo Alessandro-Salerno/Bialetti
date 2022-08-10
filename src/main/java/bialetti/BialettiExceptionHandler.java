@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti;
+package bialetti;
 
 import java.io.IOException;
 import java.net.SocketException;

@@ -1,7 +1,7 @@
-package alessandrosalerno.bialetti.server;
+package bialetti.server;
 
-import alessandrosalerno.bialetti.BialettiConnection;
-import alessandrosalerno.bialetti.BialettiExceptionHandler;
+import bialetti.BialettiConnection;
+import bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
 import java.net.SocketException;

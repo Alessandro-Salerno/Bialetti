@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti.server;
+package bialetti.server;
 
 /*
  * The standard interface for a BialettiServerEventHandler

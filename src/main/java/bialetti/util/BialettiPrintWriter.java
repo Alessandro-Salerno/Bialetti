@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti.util;
+package bialetti.util;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;

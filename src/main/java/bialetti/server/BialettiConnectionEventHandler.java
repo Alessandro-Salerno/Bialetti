@@ -1,6 +1,6 @@
-package alessandrosalerno.bialetti.server;
+package bialetti.server;
 
-import alessandrosalerno.bialetti.BialettiConnection;
+import bialetti.BialettiConnection;
 
 /*
  * The standard interface for a BialettiConnectionEventHandler

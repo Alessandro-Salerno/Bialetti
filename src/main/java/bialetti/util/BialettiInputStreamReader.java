@@ -1,4 +1,4 @@
-package alessandrosalerno.bialetti.util;
+package bialetti.util;
 
 import java.io.IOException;
 import java.io.InputStream;

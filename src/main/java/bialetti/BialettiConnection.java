@@ -1,7 +1,7 @@
-package alessandrosalerno.bialetti;
+package bialetti;
 
-import alessandrosalerno.bialetti.util.BialettiInputStreamReader;
-import alessandrosalerno.bialetti.util.BialettiPrintWriter;
+import bialetti.util.BialettiInputStreamReader;
+import bialetti.util.BialettiPrintWriter;
 
 import java.io.IOException;
 import java.net.Socket;
