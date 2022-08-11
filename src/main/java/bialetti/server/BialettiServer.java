@@ -142,7 +142,7 @@ public class BialettiServer {
      * Starts the server
      * Creates ServerSocket instance
      */
-    public void start() throws Exception {
+    public void start() {
         if (serverSocket != null) {
             serverSocket = null;
             start();
