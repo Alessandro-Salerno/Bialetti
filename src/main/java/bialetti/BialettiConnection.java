@@ -75,6 +75,13 @@ public class BialettiConnection {
     }
 
     /*
+     * Closes the connection
+     */
+    public void close() throws IOException {
+        getSocket().close();
+    }
+
+    /*
      * Initialization method for the connection
      * Creates input and output channels for the connection
      */

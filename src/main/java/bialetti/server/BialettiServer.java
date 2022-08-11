@@ -5,10 +5,49 @@ import bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BialettiServer {
+    /*
+     * An extension of BialettiConnection that also holds the handler thread and
+     * provides a server-specific close() method
+     * @author Alessandro-Salerno
+     */
+    protected final class BialettiServerConnection extends BialettiConnection {
+        /*
+         * The thread that handles the connection
+         */
+        private final BialettiServerThread mThread;
+
+        /*
+         * Default constructor
+         * @param socket The client's socket
+         * @param server The server instance
+         */
+        public BialettiServerConnection(Socket socket, BialettiServer server) {
+            super(socket);
+            mThread = new BialettiServerThread(this, server, connectionEventHandler, exceptionHandler);
+        }
+
+        /*
+         * Closes the connection to the client
+         */
+        @Override
+        public void close() throws IOException {
+            super.close();
+            connectedClients.remove(this);
+            closeConnection(this);
+            getThread().interrupt();
+        }
+
+        /*
+         * Getter for the handler thread
+         */
+        public BialettiServerThread getThread() { return mThread; }
+    }
+
     /*
      * The port on which the server is hosted
      */
@@ -29,11 +68,7 @@ public class BialettiServer {
     /*
      *  List of connected clients
      */
-    protected List<BialettiConnection> connectedClients;
-    /*
-     * List of threads dedicated to handling clients
-     */
-    protected List<BialettiServerThread> serverThreads;
+    protected List<BialettiServerConnection> connectedClients;
     /*
      * The SocketServer instance
      */
@@ -56,7 +91,6 @@ public class BialettiServer {
         serverEventHandler     = serverHandler;
         exceptionHandler       = exHandler;
         connectedClients       = new ArrayList<>();
-        serverThreads          = new ArrayList<>();
 
         // Start the server
         start();
@@ -80,32 +114,16 @@ public class BialettiServer {
     }
 
     /*
-     * Closes a connection to a client
-     * @param connection The BialettiConnection instance of the client
-     */
-    public void closeConnection(BialettiConnection connection) throws IOException {
-        connection.getSocket().close();
-        BialettiServerThread sThread = serverThreads.get(connectedClients.indexOf(connection));
-        connectedClients.remove(connection);
-        serverThreads.remove(sThread);
-        connectionEventHandler.onClose(connection,this);
-        sThread.interrupt();
-    }
-
-    /*
      * Stops the server
      */
     public void stop() throws IOException {
-        // Clear list of clients
-        connectedClients.clear();
-
-        // Stop all threads
-        for (BialettiServerThread sThread : serverThreads) {
-            sThread.interrupt();
+        // Close all connections
+        for (BialettiServerConnection connection : connectedClients) {
+            connection.close();
         }
 
-        // Clear threads list and close the server socket
-        serverThreads.clear();
+        // Clear list of connections and close server socket
+        connectedClients.clear();
         serverSocket.close();
 
         try {
@@ -124,8 +142,8 @@ public class BialettiServer {
      * Starts the server
      * Creates ServerSocket instance
      */
-    protected void start() {
-        if (serverSocket != null && serverSocket.isClosed()) {
+    public void start() throws Exception {
+        if (serverSocket != null) {
             serverSocket = null;
             start();
             return;
@@ -164,18 +182,14 @@ public class BialettiServer {
         try {
             // Accept connections forever
             while (true) {
-                // Wait for a client to connect and instantiate a BialettiConnection for it
-                BialettiConnection newClient = new BialettiConnection(serverSocket.accept());
-
-                // Create new thread
-                BialettiServerThread sThread = new BialettiServerThread(newClient, this, connectionEventHandler, exceptionHandler);
+                // Wait for a client to connect
+                BialettiServerConnection newClient = new BialettiServerConnection(serverSocket.accept(), this);
 
                 // Append client to the list of connected clients and start the thread
                 connectedClients.add(newClient);
-                serverThreads.add(sThread);
 
                 // Start handler thread
-                sThread.start();
+                newClient.getThread().start();
             }
         }
 
@@ -184,6 +198,14 @@ public class BialettiServer {
             // Call handler method
             exceptionHandler.raise(e, this);
         }
+    }
+
+    /*
+     * Calls the onClose handler for the connection
+     * @param connection The BialettiConnection instance of the client
+     */
+    protected void closeConnection(BialettiConnection connection) {
+        connectionEventHandler.onClose(connection,this);
     }
 
     /*
