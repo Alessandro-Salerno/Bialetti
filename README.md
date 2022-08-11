@@ -31,135 +31,14 @@ To use Bialetti, you're going to need to import the `jar` file and the `bialetti
 
 ### Creating a simple server application
 To create a server application, you're going to need the following components:
+* A `BialettiServer` child-class
+* A Client Representation
 * A Connection Event Handler
 * A Server Event Handler
 * An Exception Handler
 
 Bialetti provides easy-to-use interfaces and classes for each of these.
-
-#### Connection Handler
-```java
-import bialetti.BialettiConnection;
-import bialetti.server.BialettiConnectionEventHandler;
-import bialetti.server.BialettiServer;
-
-import java.util.Date;
-import java.util.Objects;
-
-public class ServerLogic implements BialettiConnectionEventHandler {
-    /*
-     * What happens when the connection is first established
-     */
-    @Override
-    public void onConnect(BialettiConnection bialettiConnection, BialettiServer bialettiServer) throws Exception {
-        // Print the address of the newly connecte4d client
-        System.out.println("New Client Connected: " + bialettiConnection.getSocket().toString());
-    }
-
-    /*
-     * Main handle method
-     * Runs in an infinite loop
-     */
-    @Override
-    public void handle(BialettiConnection bialettiConnection, BialettiServer bialettiServer) throws Exception {
-        // Sends a message to the client containing the current time and date
-        bialettiConnection.send(new Date().toString());
-        
-        // Listens for a response
-        if (Objects.equals(bialettiConnection.receive(), "STOP")) {
-            // If the client replies with the string "STOP", then the connection gets terminated
-            bialettiConnection.close();
-        }
-    }
-
-    /*
-     * What happens when the connection is closed
-     */
-    @Override
-    public void onClose(BialettiConnection bialettiConnection, BialettiServer bialettiServer) {
-        System.out.println("Client Disconnected: " + bialettiConnection.getSocket().toString());
-    }
-}
-```
-
-#### Server Event Handler
-```java
-import bialetti.server.BialettiServer;
-import bialetti.server.BialettiServerEventHandler;
-
-public class ServerHandler implements BialettiServerEventHandler {
-    /*
-     * What happens when the server is first started
-     */
-    @Override
-    public void onStart(BialettiServer bialettiServer) throws Exception {
-        System.out.println("[+] My Server started");
-    }
-
-    /*
-     * What happens when the server is stopped
-     */
-    @Override
-    public void onStop(BialettiServer bialettiServer) throws Exception {
-        System.out.println("[+] My server was stopped");
-    }
-}
-```
-
-#### Exception Handler
-Exception handlers are a little complicated, they follow a hierarchical pattern where connection-related handlers are considered "more desirable" than server-related handlers which themselves are considered "more desirable" than generic handlers. Here's na example:
-```java
-import bialetti.BialettiConnection;
-import bialetti.server.BialettiServerExceptionHandler;
-import bialetti.annotations.BialettiExceptionHandlerMethod;
-import bialetti.annotations.BialettiGenericExceptionHandlerMethod;
-import bialetti.annotations.BialettiServerExceptionMethod;
-import bialetti.server.BialettiServer;
-
-import java.net.SocketException;
-
-public class ExceptionHandler extends BialettiServerExceptionHandler {
-    /*
-     * This will be called if possible
-     */
-    @BialettiExceptionHandlerMethod
-    public void onSocketException(SocketException socketException, BialettiConnection bialettiConnection, BialettiServer bialettiServer) {
-        System.out.println("A socket exception was thrown on server[" + bialettiServer.toString() + "] and client[" + bialettiConnection.toString() + "]");
-    }
-
-    /*
-     * This will be called if the above one fails
-     */
-    @BialettiServerExceptionMethod
-    public void onSocketException(SocketException socketException, BialettiServer bialettiServer) {
-        System.out.println("A socket exception was thrown on a server: " + bialettiServer.toString());
-    }
-
-    /*
-     * This will be called if the above one fails
-     */
-    @BialettiGenericExceptionHandlerMethod
-    public void onSocketException(SocketException socketException) {
-        System.out.println("A socket exception was thrown, no further information.");
-    }
-}
-```
-
-#### Main server class
-```java
-import bialetti.server.BialettiServer;
-
-public class Server {
-    public static void main(String[] args) throws Exception {
-        BialettiServer mServer = new BialettiServer(
-                8000,
-                new ServerLogic(),
-                new ServerHandler(),
-                new ExceptionHandler()
-        );
-    }
-}
-```
+Up-to-date documentation will be provided soon.
 
 <!-- LICENSE -->
 

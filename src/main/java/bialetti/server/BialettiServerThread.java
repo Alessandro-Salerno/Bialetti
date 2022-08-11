@@ -1,29 +1,27 @@
 package bialetti.server;
 
-import bialetti.BialettiConnection;
-
 /*
  * Class that extends java s standard Thread
  * Used to handle clients
  * @author Alessandro-Salerno
  */
-class BialettiServerThread extends Thread {
+class BialettiServerThread<T> extends Thread {
     /*
      * The target client
      */
-    private BialettiConnection connectedClient;
+    private final T client;
     /*
      * The host server
      */
-    private BialettiServer hostServer;
+    private final BialettiServer<T> hostServer;
     /*
      * The event handler
      */
-    private final BialettiConnectionEventHandler eventHandler;
+    private final BialettiConnectionEventHandler<T> eventHandler;
     /*
      * The cexception handler
      */
-    private final BialettiServerExceptionHandler exceptionHandler;
+    private final BialettiServerExceptionHandler<T> exceptionHandler;
 
     /*
      * Default constructor
@@ -32,8 +30,8 @@ class BialettiServerThread extends Thread {
      * @param handler The BialettiEventHandler instance for the target server
      * @param exHandler The BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(BialettiConnection client, BialettiServer server, BialettiConnectionEventHandler handler, BialettiServerExceptionHandler exHandler) {
-        connectedClient  = client;
+    public BialettiServerThread(T client, BialettiServer<T> server, BialettiConnectionEventHandler<T> handler, BialettiServerExceptionHandler<T> exHandler) {
+        this.client = client;
         hostServer       = server;
         eventHandler     = handler;
         exceptionHandler = exHandler;
@@ -43,7 +41,7 @@ class BialettiServerThread extends Thread {
     public void run() {
         try {
             // Call initial connection method
-            eventHandler.onConnect(connectedClient, hostServer);
+            eventHandler.onConnect(client, hostServer);
         }
 
         // Exception handler
@@ -56,13 +54,13 @@ class BialettiServerThread extends Thread {
         while (!Thread.interrupted()) {
             try {
                 // Call handler method
-                eventHandler.handle(connectedClient, hostServer);
+                eventHandler.handle(client, hostServer);
             }
 
             // Exception handler
             catch (Exception e) {
                 // Call exception handler method
-                exceptionHandler.raise(e, connectedClient, hostServer);
+                exceptionHandler.raise(e, client, hostServer);
             }
         }
     }
