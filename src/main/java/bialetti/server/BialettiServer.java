@@ -19,6 +19,9 @@ public abstract class BialettiServer<T> {
          * The thread that handles the connection
          */
         private final BialettiServerThread<T> mThread;
+        /*
+         * A T (ClientType) instance
+         */
         private final T client;
 
         /*
@@ -91,7 +94,7 @@ public abstract class BialettiServer<T> {
         connectionEventHandler = clientHandler;
         serverEventHandler     = serverHandler;
         exceptionHandler       = exHandler;
-        activeConnections = new ArrayList<>();
+        activeConnections      = new ArrayList<>();
 
         // Start the server
         start();
@@ -188,5 +191,10 @@ public abstract class BialettiServer<T> {
      */
     public int getPort() { return serverPort; }
 
+    /*
+     * User-defined method
+     * Returns a T instance (ClientType) given a connection
+     * @param bialettiConnection The newly established connection
+     */
     protected abstract T getClientFromBialettiConnection(BialettiConnection bialettiConnection);
 }
