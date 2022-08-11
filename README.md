@@ -68,7 +68,7 @@ public class ServerLogic implements BialettiConnectionEventHandler {
         // Listens for a response
         if (Objects.equals(bialettiConnection.receive(), "STOP")) {
             // If the client replies with the string "STOP", then the connection gets terminated
-            bialettiServer.closeConnection(bialettiConnection);
+            bialettiConnection.close();
         }
     }
 
