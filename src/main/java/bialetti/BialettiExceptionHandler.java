@@ -43,7 +43,7 @@ public abstract class BialettiExceptionHandler {
      * @param ...parameterTypes The types of the required parameters
      */
     @SuppressWarnings("unchecked")
-    protected Method getHandlerMethod(Exception exception, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected final Method getHandlerMethod(Exception exception, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
         // Get handler method from the class
         Method handlerMethod = getClass().getMethod(
                 "on" + exception.getClass().getSimpleName(),
