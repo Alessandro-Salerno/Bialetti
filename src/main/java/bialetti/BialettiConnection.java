@@ -14,15 +14,15 @@ public class BialettiConnection {
     /*
      * The Java Socket for the connection
      */
-    private final Socket connectionSocket;
+    protected final Socket connectionSocket;
     /*
      * The connection's input stream reader
      */
-    private final BialettiInputStreamReader inputStreamReader;
+    protected final BialettiInputStreamReader inputStreamReader;
     /*
      * The connection's output stream
      */
-    private final BialettiPrintWriter outputPrintWriter;
+    protected final BialettiPrintWriter outputPrintWriter;
 
     /*
      * Client-side constructor
