@@ -1,10 +1,8 @@
 package bialetti.server;
 
 import bialetti.BialettiConnection;
-import bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -65,7 +63,7 @@ public class BialettiServer {
     /*
      * The event handler for server exceptions
      */
-    protected final BialettiExceptionHandler exceptionHandler;
+    protected final BialettiServerExceptionHandler exceptionHandler;
     /*
      *  List of connected clients
      */
@@ -86,7 +84,7 @@ public class BialettiServer {
      * @param serverHandler BialettiServerEventHandler instance
      * @param exHandler The server's exception handler
      */
-    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler, BialettiServerEventHandler serverHandler, BialettiExceptionHandler exHandler) {
+    public BialettiServer(int port, BialettiConnectionEventHandler clientHandler, BialettiServerEventHandler serverHandler, BialettiServerExceptionHandler exHandler) {
         serverPort             = port;
         connectionEventHandler = clientHandler;
         serverEventHandler     = serverHandler;
@@ -111,7 +109,7 @@ public class BialettiServer {
             public void onStop(BialettiServer server) throws Exception {
                 System.out.println("[+] Server stopped");
             }
-        }, new BialettiExceptionHandler() {});
+        }, new BialettiServerExceptionHandler() {});
     }
 
     /*

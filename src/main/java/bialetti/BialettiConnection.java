@@ -4,9 +4,7 @@ import bialetti.util.BialettiInputStreamReader;
 import bialetti.util.BialettiPrintWriter;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 
 /*
  * A wrapper for Java's TCP Socket Class

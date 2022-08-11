@@ -110,7 +110,7 @@ public class ServerHandler implements BialettiServerEventHandler {
 Exception handlers are a little complicated, they follow a hierarchical pattern where connection-related handlers are considered "more desirable" than server-related handlers which themselves are considered "more desirable" than generic handlers. Here's na example:
 ```java
 import bialetti.BialettiConnection;
-import bialetti.BialettiExceptionHandler;
+import bialetti.server.BialettiServerExceptionHandler;
 import bialetti.annotations.BialettiExceptionHandlerMethod;
 import bialetti.annotations.BialettiGenericExceptionHandlerMethod;
 import bialetti.annotations.BialettiServerExceptionMethod;
@@ -118,7 +118,7 @@ import bialetti.server.BialettiServer;
 
 import java.net.SocketException;
 
-public class ExceptionHandler extends BialettiExceptionHandler {
+public class ExceptionHandler extends BialettiServerExceptionHandler {
     /*
      * This will be called if possible
      */

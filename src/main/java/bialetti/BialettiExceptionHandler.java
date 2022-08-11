@@ -1,8 +1,6 @@
 package bialetti;
 
 import bialetti.annotations.BialettiGenericExceptionHandlerMethod;
-import bialetti.annotations.BialettiServerExceptionMethod;
-import bialetti.server.BialettiServer;
 
 import java.lang.reflect.Method;
 
@@ -11,63 +9,6 @@ import java.lang.reflect.Method;
  * @author Alessandro-Salerno
  */
 public abstract class BialettiExceptionHandler {
-    /*
-     * Calls the right handler method for the exception
-     * @param exception The Exception itself
-     * @param bialettiConnection The connection that caused the exception
-     * @param bialettiServer The server handling the connection
-     */
-    public final void raise(Exception exception, BialettiConnection bialettiConnection, BialettiServer bialettiServer) {
-        try {
-            Method handlerMethod = getHandlerMethod(
-                    exception, BialettiExceptionHandler.class,
-                    exception.getClass(), bialettiConnection.getClass(), bialettiServer.getClass()
-            );
-
-            // Call handler method
-            handlerMethod.invoke(this, exception, bialettiConnection, bialettiServer);
-        }
-
-        // What happens if there's no dedicated handler methd
-        catch (NoSuchMethodException noSuchMethodException) {
-            // Call the generic exception handler
-            raise(exception, bialettiServer);
-        }
-
-        // If some other exception is raised during the process
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-     * Calls the right handler method for the exception
-     * @param exception The Exception itself
-     * @param bialettiServer The server handling the connection
-     */
-    public final void raise(Exception exception, BialettiServer bialettiServer) {
-        try {
-            Method handlerMethod = getHandlerMethod(
-                    exception, BialettiServerExceptionMethod.class,
-                    exception.getClass(), bialettiServer.getClass()
-            );
-
-            // Call handler method
-            handlerMethod.invoke(this, exception, bialettiServer);
-        }
-
-        // What happens if there's no dedicated handler methd
-        catch (NoSuchMethodException noSuchMethodException) {
-            // Call the generic exception handler
-            raise(exception);
-        }
-
-        // If some other exception is raised during the process
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /*
      * Calls the right handler method for the exception
      * @param exception The Exception itself
@@ -102,7 +43,7 @@ public abstract class BialettiExceptionHandler {
      * @param ...parameterTypes The types of the required parameters
      */
     @SuppressWarnings("unchecked")
-    private Method getHandlerMethod(Exception exception, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected Method getHandlerMethod(Exception exception, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
         // Get handler method from the class
         Method handlerMethod = getClass().getMethod(
                 "on" + exception.getClass().getSimpleName(),
