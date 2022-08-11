@@ -4,7 +4,9 @@ import bialetti.util.BialettiInputStreamReader;
 import bialetti.util.BialettiPrintWriter;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 /*
  * A wrapper for Java's TCP Socket Class
@@ -14,55 +16,43 @@ public class BialettiConnection {
     /*
      * The Java Socket for the connection
      */
-    private Socket connectionSocket;
+    private final Socket connectionSocket;
     /*
      * The connection's input stream reader
      */
-    private BialettiInputStreamReader inputStreamReader;
+    private final BialettiInputStreamReader inputStreamReader;
     /*
      * The connection's output stream
      */
-    private BialettiPrintWriter outputPrintWriter;
+    private final BialettiPrintWriter outputPrintWriter;
 
     /*
      * Client-side constructor
      * @param address The IP address of the destination host
      * @param port The port of the destination host
      */
-    public BialettiConnection(String address, int port) {
-        try {
-            // Establish a connection to the desired address and port
-            connectionSocket = new Socket(address, port);
-            initializeConnection();
-        }
-
-        // Exception handler
-        catch (Exception e) {
-            System.out.println("[-] Socket Error");
-            e.printStackTrace();
-        }
+    public BialettiConnection(String address, int port) throws IOException {
+        this(new Socket(address, port));
     }
 
     /*
      * Server-side constructor
      * @param socket The Java TCP Socket instance
      */
-    public BialettiConnection(Socket socket) {
+    public BialettiConnection(Socket socket) throws IOException {
         connectionSocket = socket;
-        initializeConnection();
+
+        // Saves streams
+        inputStreamReader = new BialettiInputStreamReader(connectionSocket.getInputStream());
+        outputPrintWriter = new BialettiPrintWriter(connectionSocket.getOutputStream());
     }
 
     /*
      * Reads from the input stream and returns everything as a byte array
      */
     public String receive() throws IOException {
-        String data = "<NO-DATA>";    // Buffer for the input stream reader
-
-        // Reads an entire line from the stream
-        data = inputStreamReader.readall();
-
-        // Returns the received data
-        return data;
+        // Reads the entire stream and returns it in string form
+        return inputStreamReader.readall();
     }
 
     /*
@@ -79,22 +69,6 @@ public class BialettiConnection {
      */
     public void close() throws IOException {
         getSocket().close();
-    }
-
-    /*
-     * Initialization method for the connection
-     * Creates input and output channels for the connection
-     */
-    private void initializeConnection() {
-        try {
-            inputStreamReader = new BialettiInputStreamReader(connectionSocket.getInputStream());
-            outputPrintWriter = new BialettiPrintWriter(connectionSocket.getOutputStream());
-        }
-
-        // Exception handler
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /*

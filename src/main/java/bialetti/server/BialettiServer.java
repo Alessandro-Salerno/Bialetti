@@ -4,6 +4,7 @@ import bialetti.BialettiConnection;
 import bialetti.BialettiExceptionHandler;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class BialettiServer {
          * @param socket The client's socket
          * @param server The server instance
          */
-        public BialettiServerConnection(Socket socket) {
+        public BialettiServerConnection(Socket socket) throws IOException {
             super(socket);
             mThread = new BialettiServerThread(this, BialettiServer.this, connectionEventHandler, exceptionHandler);
         }
@@ -155,8 +156,9 @@ public class BialettiServer {
         }
 
         // IOException handler
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (Exception e) {
+            exceptionHandler.raise(e, this);
+            return;
         }
 
         // Create thread to listen to incoming requests
