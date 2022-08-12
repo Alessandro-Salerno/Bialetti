@@ -1,8 +1,10 @@
 package bialetti.server;
 
 import bialetti.BialettiConnection;
+import jdk.net.Sockets;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -41,8 +43,20 @@ public abstract class BialettiServer<T> {
         @Override
         @SuppressWarnings("all")
         public void close() throws Exception {
+            synchronized (activeConnections) {
+                super.close();
+                activeConnections.remove(this);
+                ((BialettiServerClientRepresentation) client).onClose();
+                getThread().interrupt();
+            }
+        }
+
+        /*
+         * Closes the connection without removing it from the list
+         */
+        @SuppressWarnings("all")
+        public void justClose() throws Exception {
             super.close();
-            activeConnections.remove(this);
             ((BialettiServerClientRepresentation) client).onClose();
             getThread().interrupt();
         }
@@ -64,11 +78,11 @@ public abstract class BialettiServer<T> {
     /*
      *  List of active connections
      */
-    protected List<BialettiServerConnection> activeConnections;
+    protected final List<BialettiServerConnection> activeConnections;
     /*
      * The SocketServer instance
      */
-    protected ServerSocket serverSocket;
+    protected final ServerSocket serverSocket;
     /*
      * Thread on which the server's listen method is run
      */
@@ -80,9 +94,25 @@ public abstract class BialettiServer<T> {
      * @param sxh An exception handler for the server
      */
     public BialettiServer(int port, BialettiServerExceptionHandler<T> sxh) {
+        // Set fields
         serverPort        = port;
         exceptionHandler  = sxh;
         activeConnections = new ArrayList<>();
+
+        // Open connection
+        ServerSocket nServer;
+        try { nServer = new ServerSocket(serverPort); }
+        catch (Exception e) {
+            // Call handler method
+            exceptionHandler.raise(e, this);
+
+            // Abort
+            serverSocket = null;
+            return;
+        }
+
+        // Save server socket in field
+        serverSocket = nServer;
 
         start();
     }
@@ -99,16 +129,21 @@ public abstract class BialettiServer<T> {
      * Stops the server
      */
     public void stop() throws Exception {
-        // Clear list of connections and close server socket
-        activeConnections.clear();
-        serverSocket.close();
+        synchronized (activeConnections) {
+            // Close all connections
+            for (BialettiServerConnection connection : activeConnections) {
+                connection.justClose();
+            }
 
-        try {
-            // Call handler method
-            onStop();
+            // Clear list of active connections and ensure that no other thread can access it
+            activeConnections.clear();
         }
 
-        // Exception handler
+        // Stop listening
+        listenThread.interrupt();
+
+
+        try { onStop(); }
         catch (Exception e) {
             // Call handler method
             exceptionHandler.raise(e, this);
@@ -120,33 +155,20 @@ public abstract class BialettiServer<T> {
      * Creates ServerSocket instance
      */
     public void start() {
-        if (serverSocket != null) {
-            serverSocket = null;
-            start();
-            return;
+        if (!serverSocket.isBound()) {
+            // Reopen socket]
+            try { serverSocket.bind(new InetSocketAddress("", serverPort)); }
+            catch (Exception e) {
+                // Call handler method
+                exceptionHandler.raise(e, this);
+            }
         }
 
-        try {
-            // Create server socket
-            serverSocket = new ServerSocket(serverPort);
-        }
-
-        // IOException handler
-        catch (Exception e) {
-            exceptionHandler.raise(e, this);
-            return;
-        }
-
-        // Create thread to listen to incoming requests
-        listenThread = new Thread(() -> listen());
+        // Start listen thread
+        listenThread = new Thread(this::listen);
         listenThread.start();
 
-        try {
-            // Call handler method
-            onStart();
-        }
-
-        // Exception handler
+        try { onStart(); }
         catch (Exception e) {
             // Call handler method
             exceptionHandler.raise(e, this);
@@ -169,9 +191,6 @@ public abstract class BialettiServer<T> {
                 // Start handler thread
                 newConnection.getThread().start();
             }
-
-            // Stops the server when the thread is interrupted
-            stop();
         }
 
         // Exception handler
