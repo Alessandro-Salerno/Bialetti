@@ -101,6 +101,14 @@ public abstract class BialettiServer<T> {
     }
 
     /*
+     * Sends the same message to all active connections
+     * @param message The message to be broadcasted
+     */
+    public void broadcast(String message) {
+        activeConnections.forEach(connection -> connection.send(message));
+    }
+
+    /*
      * Stops the server
      */
     public void stop() throws IOException {
