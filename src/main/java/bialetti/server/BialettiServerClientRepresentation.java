@@ -6,17 +6,46 @@ import bialetti.BialettiConnection;
  * A representation of a client
  * @author Alessandro-Salerno
  */
-public abstract class BialettiServerClientRepresentation {
+public abstract class BialettiServerClientRepresentation<ServerType> {
     /*
      * The connection on which che client runs on
      */
-    public final BialettiConnection connection;
+    protected final BialettiConnection connection;
+    /*
+     * The server handling the client
+     */
+    protected final ServerType server;
 
     /*
      * Default constructor
-     * @param bialettiConnection The connectino
+     * @param c The connection
+     * @param s The server
      */
-    public BialettiServerClientRepresentation(BialettiConnection bialettiConnection) {
-        connection = bialettiConnection;
+    public BialettiServerClientRepresentation(BialettiConnection c, ServerType s) {
+        connection = c;
+        server     = s;
     }
+
+    /*
+     * Getter for the connection
+     */
+    public BialettiConnection getConnection() { return connection; }
+    /*
+     * Getter for the server
+     */
+    public ServerType getServer() { return server; }
+
+    /*
+     * What happens when the connection is first established
+     */
+    public abstract void onConnect() throws Exception;
+    /*
+     * The main connection handler
+     * Runs in a loop
+     */
+    public abstract void handle() throws Exception;
+    /*
+     * What happens when the connection is terminated
+     */
+    public abstract void onClose() throws Exception;
 }

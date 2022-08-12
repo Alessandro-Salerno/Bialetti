@@ -65,7 +65,7 @@ public class BialettiConnection {
     /*
      * Closes the connection
      */
-    public void close() throws IOException {
+    public void close() throws Exception {
         getSocket().close();
     }
 

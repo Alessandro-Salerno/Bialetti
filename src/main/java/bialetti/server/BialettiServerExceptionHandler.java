@@ -6,14 +6,14 @@ import bialetti.annotations.BialettiServerExceptionHandlerMethod;
 
 import java.lang.reflect.Method;
 
-public abstract class BialettiServerExceptionHandler<T> extends BialettiExceptionHandler {
+public abstract class BialettiServerExceptionHandler<ClientType> extends BialettiExceptionHandler {
     /*
      * Calls the right handler method for the exception
      * @param exception The Exception itself
      * @param client The client that caused the exception
      * @param bialettiServer The server handling the connection
      */
-    public final void raise(Exception exception, T client, BialettiServer<T> bialettiServer) {
+    public final void raise(Exception exception, ClientType client, BialettiServer<ClientType> bialettiServer) {
         try {
             Method handlerMethod = getHandlerMethod(
                     exception, BialettiExceptionHandlerMethod.class,
@@ -41,7 +41,7 @@ public abstract class BialettiServerExceptionHandler<T> extends BialettiExceptio
      * @param exception The Exception itself
      * @param bialettiServer The server handling the connection
      */
-    public final void raise(Exception exception, BialettiServer<T> bialettiServer) {
+    public final void raise(Exception exception, BialettiServer<ClientType> bialettiServer) {
         try {
             Method handlerMethod = getHandlerMethod(
                     exception, BialettiServerExceptionHandlerMethod.class,

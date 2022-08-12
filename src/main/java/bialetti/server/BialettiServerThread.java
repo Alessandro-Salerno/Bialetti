@@ -15,10 +15,6 @@ class BialettiServerThread<T> extends Thread {
      */
     private final BialettiServer<T> hostServer;
     /*
-     * The event handler
-     */
-    private final BialettiConnectionEventHandler<T> eventHandler;
-    /*
      * The cexception handler
      */
     private final BialettiServerExceptionHandler<T> exceptionHandler;
@@ -27,21 +23,20 @@ class BialettiServerThread<T> extends Thread {
      * Default constructor
      * @param client The BialettiConnection instance of the target client
      * @param server The BialettiServer instance of the host server
-     * @param handler The BialettiEventHandler instance for the target server
      * @param exHandler The BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(T client, BialettiServer<T> server, BialettiConnectionEventHandler<T> handler, BialettiServerExceptionHandler<T> exHandler) {
-        this.client = client;
-        hostServer       = server;
-        eventHandler     = handler;
-        exceptionHandler = exHandler;
+    public BialettiServerThread(T c, BialettiServer<T> s, BialettiServerExceptionHandler<T> sxh) {
+        client           = c;
+        hostServer       = s;
+        exceptionHandler = sxh;
     }
 
     @Override
+    @SuppressWarnings("all")
     public void run() {
         try {
             // Call initial connection method
-            eventHandler.onConnect(client, hostServer);
+            ((BialettiServerClientRepresentation) client).onConnect();
         }
 
         // Exception handler
@@ -54,7 +49,7 @@ class BialettiServerThread<T> extends Thread {
         while (!Thread.interrupted()) {
             try {
                 // Call handler method
-                eventHandler.handle(client, hostServer);
+                ((BialettiServerClientRepresentation) client).handle();
             }
 
             // Exception handler
