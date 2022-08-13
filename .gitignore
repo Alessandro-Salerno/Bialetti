@@ -23,6 +23,7 @@
 /build
 /bin
 /out
+/.gradle
 
 # stupid filesystem files
 .DS_Store
