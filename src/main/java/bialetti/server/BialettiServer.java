@@ -1,13 +1,14 @@
 package bialetti.server;
 
 import bialetti.BialettiConnection;
-import jdk.net.Sockets;
+import bialetti.annotations.BialettiHandleMethod;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class BialettiServer<T> {
@@ -20,7 +21,7 @@ public abstract class BialettiServer<T> {
         /*
          * The thread that handles the connection
          */
-        private final BialettiServerThread<T> mThread;
+        private final List<BialettiServerThread<T>> mThreads;
         /*
          * A T (ClientType) instance
          */
@@ -33,8 +34,36 @@ public abstract class BialettiServer<T> {
          */
         public BialettiServerConnection(Socket socket) throws IOException {
             super(socket);
-            client = getNewClient(this);
-            mThread = new BialettiServerThread<T>(client, BialettiServer.this, exceptionHandler);
+            mThreads = new ArrayList<>();
+            client   = getNewClient(this);
+
+            @SuppressWarnings("all")
+            Thread startThread = new Thread(() -> {
+                try { ((BialettiServerClientRepresentation) client).onConnect(); }
+                catch (Exception e) {
+                    // Call handler method
+                    exceptionHandler.raise(e);
+                }
+            });
+
+            Arrays.stream(client.getClass().getMethods()).toList().forEach(method -> {
+                    if (method.isAnnotationPresent(BialettiHandleMethod.class)) {
+                        mThreads.add(new BialettiServerThread<T>(client, method, BialettiServer.this, exceptionHandler) {
+                            @Override
+                            public void run() {
+                                // Make sure that the thread does not start before the start thread
+                                try { startThread.join(); }
+                                catch (InterruptedException ie) { }
+
+                                super.run();
+                            }
+                        });
+                    }
+                }
+            );
+
+            // Call onConnect handler via new thread
+            startThread.start();
         }
 
         /*
@@ -47,7 +76,7 @@ public abstract class BialettiServer<T> {
                 super.close();
                 activeConnections.remove(this);
                 ((BialettiServerClientRepresentation) client).onClose();
-                getThread().interrupt();
+                getThreads().forEach(Thread::interrupt);
             }
         }
 
@@ -58,13 +87,13 @@ public abstract class BialettiServer<T> {
         public void justClose() throws Exception {
             super.close();
             ((BialettiServerClientRepresentation) client).onClose();
-            getThread().interrupt();
+            getThreads().forEach(Thread::interrupt);
         }
 
         /*
          * Getter for the handler thread
          */
-        public BialettiServerThread<T> getThread() { return mThread; }
+        public List<BialettiServerThread<T>> getThreads() { return mThreads; }
     }
 
     /*
@@ -119,7 +148,7 @@ public abstract class BialettiServer<T> {
 
     /*
      * Sends the same message to all active connections
-     * @param message The message to be broadcasted
+     * @param message The message to be broadcast
      */
     public void broadcast(String message) {
         activeConnections.forEach(connection -> connection.send(message));
@@ -141,7 +170,6 @@ public abstract class BialettiServer<T> {
 
         // Stop listening
         listenThread.interrupt();
-
 
         try { onStop(); }
         catch (Exception e) {
@@ -189,7 +217,7 @@ public abstract class BialettiServer<T> {
                 activeConnections.add(newConnection);
 
                 // Start handler thread
-                newConnection.getThread().start();
+                newConnection.getThreads().forEach(Thread::start);
             }
         }
 

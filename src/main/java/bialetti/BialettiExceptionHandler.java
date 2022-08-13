@@ -10,27 +10,27 @@ import java.lang.reflect.Method;
  */
 public abstract class BialettiExceptionHandler {
     /*
-     * Calls the right handler method for the exception
-     * @param exception The Exception itself
+     * Calls the right handler method for the throwable
+     * @param throwable The Exception itself
      */
-    public final void raise(Exception exception) {
+    public final void raise(Throwable throwable) {
         try {
             Method handlerMethod = getHandlerMethod(
-                    exception, BialettiGenericExceptionHandlerMethod.class,
-                    exception.getClass()
+                    throwable, BialettiGenericExceptionHandlerMethod.class,
+                    throwable.getClass()
             );
 
             // Call handler method
-            handlerMethod.invoke(this, exception);
+            handlerMethod.invoke(this, throwable);
         }
 
         // What happens if there's no dedicated handler methd
         catch (NoSuchMethodException noSuchMethodException) {
-            // Call the generic exception handler
-            onException(exception);
+            // Call the generic throwable handler
+            onThrowable(throwable);
         }
 
-        // If some other exception is raised during the process
+        // If some other throwable is raised during the process
         catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,19 +38,19 @@ public abstract class BialettiExceptionHandler {
 
     /*
      * Gets the right method
-     * @param exception The exception
+     * @param throwable The throwable
      * @param annotation The annotation requried for the method to be ok
      * @param ...parameterTypes The types of the required parameters
      */
     @SuppressWarnings("unchecked")
-    protected final Method getHandlerMethod(Exception exception, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected final Method getHandlerMethod(Throwable throwable, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
         // Get handler method from the class
         Method handlerMethod = getClass().getMethod(
-                "on" + exception.getClass().getSimpleName(),
+                "on" + throwable.getClass().getSimpleName(),
                 parameterTypes
         );
 
-        // Throw NoSuchMethodException if the method is not marked as exception handler
+        // Throw NoSuchMethodException if the method is not marked as throwable handler
         if (!handlerMethod.isAnnotationPresent(annotation)) {
             throw new NoSuchMethodException();
         }
@@ -65,5 +65,10 @@ public abstract class BialettiExceptionHandler {
     @BialettiGenericExceptionHandlerMethod
     public void onException(Exception exception) {
         exception.printStackTrace();
+    }
+
+    @BialettiGenericExceptionHandlerMethod
+    public void onThrowable(Throwable throwable) {
+        throwable.printStackTrace();
     }
 }

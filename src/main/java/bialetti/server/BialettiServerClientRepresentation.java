@@ -40,11 +40,6 @@ public abstract class BialettiServerClientRepresentation<ServerType> {
      */
     public abstract void onConnect() throws Exception;
     /*
-     * The main connection handler
-     * Runs in a loop
-     */
-    public abstract void handle() throws Exception;
-    /*
      * What happens when the connection is terminated
      */
     public abstract void onClose() throws Exception;

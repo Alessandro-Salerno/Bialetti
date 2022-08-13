@@ -1,5 +1,8 @@
 package bialetti.server;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /*
  * Class that extends java s standard Thread
  * Used to handle clients
@@ -15,18 +18,24 @@ class BialettiServerThread<T> extends Thread {
      */
     private final BialettiServer<T> hostServer;
     /*
-     * The cexception handler
+     * The exception handler
      */
     private final BialettiServerExceptionHandler<T> exceptionHandler;
+    /*
+     * The client's handler method that the thread
+     * is tasked to call
+     */
+    private final Method handlerMethod;
 
     /*
      * Default constructor
-     * @param client The BialettiConnection instance of the target client
-     * @param server The BialettiServer instance of the host server
-     * @param exHandler The BialettiServerExceptionHandler instance
+     * @param c The BIalettiServerClientRepresentation instance of the target client
+     * @param s The BialettiServer instance of the host server
+     * @param sxh The BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(T c, BialettiServer<T> s, BialettiServerExceptionHandler<T> sxh) {
+    public BialettiServerThread(T c, Method handler, BialettiServer<T> s, BialettiServerExceptionHandler<T> sxh) {
         client           = c;
+        handlerMethod    = handler;
         hostServer       = s;
         exceptionHandler = sxh;
     }
@@ -34,28 +43,18 @@ class BialettiServerThread<T> extends Thread {
     @Override
     @SuppressWarnings("all")
     public void run() {
-        try {
-            // Call initial connection method
-            ((BialettiServerClientRepresentation) client).onConnect();
-        }
-
-        // Exception handler
-        catch (Exception e) {
-            // Call handler method
-            exceptionHandler.raise(e);
-        }
-
         // Main handler loop
         while (!Thread.interrupted()) {
-            try {
+            try { handlerMethod.invoke(client); }
+
+            catch (InvocationTargetException e) {
                 // Call handler method
-                ((BialettiServerClientRepresentation) client).handle();
+                exceptionHandler.raise(e.getCause(), client, hostServer);
             }
 
-            // Exception handler
-            catch (Exception e) {
-                // Call exception handler method
-                exceptionHandler.raise(e, client, hostServer);
+            catch (IllegalAccessException iae) {
+                iae.printStackTrace();
+                return;
             }
         }
     }

@@ -8,57 +8,57 @@ import java.lang.reflect.Method;
 
 public abstract class BialettiServerExceptionHandler<ClientType> extends BialettiExceptionHandler {
     /*
-     * Calls the right handler method for the exception
-     * @param exception The Exception itself
-     * @param client The client that caused the exception
+     * Calls the right handler method for the throwable
+     * @param throwable The Exception itself
+     * @param client The client that caused the throwable
      * @param bialettiServer The server handling the connection
      */
-    public final void raise(Exception exception, ClientType client, BialettiServer<ClientType> bialettiServer) {
+    public final void raise(Throwable throwable, ClientType client, BialettiServer<ClientType> bialettiServer) {
         try {
             Method handlerMethod = getHandlerMethod(
-                    exception, BialettiExceptionHandlerMethod.class,
-                    exception.getClass(), client.getClass(), bialettiServer.getClass()
+                    throwable, BialettiExceptionHandlerMethod.class,
+                    throwable.getClass(), client.getClass(), bialettiServer.getClass()
             );
 
             // Call handler method
-            handlerMethod.invoke(this, exception, client, bialettiServer);
+            handlerMethod.invoke(this, throwable, client, bialettiServer);
         }
 
         // What happens if there's no dedicated handler methd
         catch (NoSuchMethodException noSuchMethodException) {
-            // Call the generic exception handler
-            raise(exception, bialettiServer);
+            // Call the generic throwable handler
+            raise(throwable, bialettiServer);
         }
 
-        // If some other exception is raised during the process
+        // If some other throwable is raised during the process
         catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /*
-     * Calls the right handler method for the exception
-     * @param exception The Exception itself
+     * Calls the right handler method for the throwable
+     * @param throwable The Exception itself
      * @param bialettiServer The server handling the connection
      */
-    public final void raise(Exception exception, BialettiServer<ClientType> bialettiServer) {
+    public final void raise(Throwable throwable, BialettiServer<ClientType> bialettiServer) {
         try {
             Method handlerMethod = getHandlerMethod(
-                    exception, BialettiServerExceptionHandlerMethod.class,
-                    exception.getClass(), bialettiServer.getClass()
+                    throwable, BialettiServerExceptionHandlerMethod.class,
+                    throwable.getClass(), bialettiServer.getClass()
             );
 
             // Call handler method
-            handlerMethod.invoke(this, exception, bialettiServer);
+            handlerMethod.invoke(this, throwable, bialettiServer);
         }
 
         // What happens if there's no dedicated handler methd
         catch (NoSuchMethodException noSuchMethodException) {
-            // Call the generic exception handler
-            raise(exception);
+            // Call the generic throwable handler
+            raise(throwable);
         }
 
-        // If some other exception is raised during the process
+        // If some other throwable is raised during the process
         catch (Exception e) {
             e.printStackTrace();
         }
