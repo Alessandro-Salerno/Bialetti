@@ -1,7 +1,8 @@
 package bialetti;
 
-import bialetti.annotations.BialettiGenericExceptionHandlerMethod;
+import bialetti.annotations.exceptions.BialettiGenericExceptionHandlerMethod;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /*
@@ -24,7 +25,7 @@ public abstract class BialettiExceptionHandler {
             handlerMethod.invoke(this, throwable);
         }
 
-        // What happens if there's no dedicated handler methd
+        // What happens if there's no dedicated handler method
         catch (NoSuchMethodException noSuchMethodException) {
             // Call the generic throwable handler
             onThrowable(throwable);
@@ -39,11 +40,10 @@ public abstract class BialettiExceptionHandler {
     /*
      * Gets the right method
      * @param throwable The throwable
-     * @param annotation The annotation requried for the method to be ok
+     * @param annotation The annotation required for the method to be ok
      * @param ...parameterTypes The types of the required parameters
      */
-    @SuppressWarnings("unchecked")
-    protected final Method getHandlerMethod(Throwable throwable, Class annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected final Method getHandlerMethod(Throwable throwable, Class<? extends Annotation> annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
         // Get handler method from the class
         Method handlerMethod = getClass().getMethod(
                 "on" + throwable.getClass().getSimpleName(),
@@ -56,15 +56,6 @@ public abstract class BialettiExceptionHandler {
         }
 
         return handlerMethod;
-    }
-
-    /*
-     * What happens when a generic exception is thrown
-     * @param exception The exception
-     */
-    @BialettiGenericExceptionHandlerMethod
-    public void onException(Exception exception) {
-        exception.printStackTrace();
     }
 
     @BialettiGenericExceptionHandlerMethod

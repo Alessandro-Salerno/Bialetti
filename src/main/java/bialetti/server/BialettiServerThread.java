@@ -3,37 +3,41 @@ package bialetti.server;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/*
- * Class that extends java s standard Thread
- * Used to handle clients
+/**
+ * Subclass of {@link Thread}
+ * Used to handle a client
+ * @param <T> the type that defines a client (Subclass of {@link BialettiServerClientRepresentation})
  * @author Alessandro-Salerno
  */
-class BialettiServerThread<T> extends Thread {
-    /*
+class BialettiServerThread<T extends BialettiServerClientRepresentation<?>> extends Thread {
+    /**
      * The target client
      */
     private final T client;
-    /*
+    /**
      * The host server
      */
     private final BialettiServer<T> hostServer;
-    /*
+    /**
      * The exception handler
      */
     private final BialettiServerExceptionHandler<T> exceptionHandler;
-    /*
+    /**
      * The client's handler method that the thread
      * is tasked to call
      */
     private final Method handlerMethod;
 
-    /*
-     * Default constructor
-     * @param c The BIalettiServerClientRepresentation instance of the target client
-     * @param s The BialettiServer instance of the host server
-     * @param sxh The BialettiServerExceptionHandler instance
+    /**
+     * Constructor
+     * @param c the BialettiServerClientRepresentation instance of the target client
+     * @param s the BialettiServer instance of the host server
+     * @param sxh the BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(T c, Method handler, BialettiServer<T> s, BialettiServerExceptionHandler<T> sxh) {
+    public BialettiServerThread(T c,
+                                Method handler,
+                                BialettiServer<T> s,
+                                BialettiServerExceptionHandler<T> sxh) {
         client           = c;
         handlerMethod    = handler;
         hostServer       = s;
@@ -41,10 +45,10 @@ class BialettiServerThread<T> extends Thread {
     }
 
     @Override
-    @SuppressWarnings("all")
     public void run() {
         // Main handler loop
         while (!Thread.interrupted()) {
+            // Call dedicated handler
             try { handlerMethod.invoke(client); }
 
             catch (InvocationTargetException e) {

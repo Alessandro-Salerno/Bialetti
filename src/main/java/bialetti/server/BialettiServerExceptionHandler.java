@@ -1,17 +1,22 @@
 package bialetti.server;
 
 import bialetti.BialettiExceptionHandler;
-import bialetti.annotations.BialettiExceptionHandlerMethod;
-import bialetti.annotations.BialettiServerExceptionHandlerMethod;
+import bialetti.annotations.exceptions.BialettiExceptionHandlerMethod;
+import bialetti.annotations.exceptions.BialettiServerExceptionHandlerMethod;
 
 import java.lang.reflect.Method;
 
-public abstract class BialettiServerExceptionHandler<ClientType> extends BialettiExceptionHandler {
-    /*
-     * Calls the right handler method for the throwable
-     * @param throwable The Exception itself
-     * @param client The client that caused the throwable
-     * @param bialettiServer The server handling the connection
+/**
+ * Server-side extension of {@link BialettiExceptionHandler}
+ * @param <ClientType> the type that defines the client (Subclass of {@link BialettiServerClientRepresentation})
+ * @author Alessandro-Salerno
+ */
+public abstract class BialettiServerExceptionHandler<ClientType extends BialettiServerClientRepresentation<?>> extends BialettiExceptionHandler {
+    /**
+     * Calls the right handler method for a given throwable
+     * @param throwable the exception itself
+     * @param client the client that caused the throwable
+     * @param bialettiServer the server handling the connection
      */
     public final void raise(Throwable throwable, ClientType client, BialettiServer<ClientType> bialettiServer) {
         try {
@@ -36,8 +41,8 @@ public abstract class BialettiServerExceptionHandler<ClientType> extends Bialett
         }
     }
 
-    /*
-     * Calls the right handler method for the throwable
+    /**
+     * Calls the right handler method for a given throwable
      * @param throwable The Exception itself
      * @param bialettiServer The server handling the connection
      */

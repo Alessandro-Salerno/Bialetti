@@ -4,21 +4,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-/*
- * Bialegtti's extension of java's InputStreamReader
+/**
+ * Bialetti's extension of Java's {@link InputStreamReader}
  * @author Alessandro-Salerno
  */
 public class BialettiInputStreamReader extends InputStreamReader {
-    /*
-     * Default constructor
-     * @param stream The InputStream
+    /**
+     * Constructor
+     * @param stream the InputStream
      */
     public BialettiInputStreamReader(InputStream stream) {
         super(stream);
     }
 
-    /*
+    /**
      * Reads the entire message
+     * @throws IOException if an error occurs while reading from the stream
      */
     public String readall() throws IOException {
         char[] buffer = new char[1024];             // Temp buffer

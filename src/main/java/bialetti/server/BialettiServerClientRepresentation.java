@@ -2,22 +2,23 @@ package bialetti.server;
 
 import bialetti.BialettiConnection;
 
-/*
+/**
  * A representation of a client
+ * @param <ServerType> the server class
  * @author Alessandro-Salerno
  */
-public abstract class BialettiServerClientRepresentation<ServerType> {
-    /*
+public abstract class BialettiServerClientRepresentation<ServerType extends BialettiServer<?>> {
+    /**
      * The connection on which che client runs on
      */
     protected final BialettiConnection connection;
-    /*
-     * The server handling the client
+    /**
+     * The server handling the connection
      */
     protected final ServerType server;
 
-    /*
-     * Default constructor
+    /**
+     * Constructor
      * @param c The connection
      * @param s The server
      */
@@ -26,21 +27,25 @@ public abstract class BialettiServerClientRepresentation<ServerType> {
         server     = s;
     }
 
-    /*
-     * Getter for the connection
+    /**
+     * @return the {@link BialettiConnection} to the client
      */
     public BialettiConnection getConnection() { return connection; }
-    /*
-     * Getter for the server
+    /**
+     * @return the {@link BialettiServer}
      */
     public ServerType getServer() { return server; }
 
-    /*
+    /**
      * What happens when the connection is first established
+     * @apiNote abstract method, should be defined by subclasses
+     * @throws Exception if the user code throws one
      */
     public abstract void onConnect() throws Exception;
-    /*
+    /**
      * What happens when the connection is terminated
+     * @apiNote abstract method, should be defined by subclasses
+     * @throws Exception if the user code throws one
      */
     public abstract void onClose() throws Exception;
 }
