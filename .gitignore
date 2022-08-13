@@ -24,6 +24,7 @@
 /bin
 /out
 /.gradle
+/.idea
 
 # stupid filesystem files
 .DS_Store
