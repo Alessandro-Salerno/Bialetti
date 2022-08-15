@@ -194,7 +194,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
                                                                   method -> {
                 BialettiTCPServerThread<ClientType> newThread = new BialettiTCPServerThread<>(client,
                                                                                               method,
-                                                                                             BialettiTCPServer.this,
+                                                                                              BialettiTCPServer.this,
                                                                                               exceptionHandler) {
                     @Override
                     public void run() {
