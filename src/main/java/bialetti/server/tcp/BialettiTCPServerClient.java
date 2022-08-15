@@ -1,4 +1,4 @@
-package bialetti.server;
+package bialetti.server.tcp;
 
 import bialetti.connection.tcp.BialettiTCPConnection;
 
@@ -7,7 +7,7 @@ import bialetti.connection.tcp.BialettiTCPConnection;
  * @param <ServerType> the server class
  * @author Alessandro-Salerno
  */
-public abstract class BialettiServerClientRepresentation<ServerType extends BialettiServer<?>> {
+public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServer<?>> {
     /**
      * The connection on which che client runs on
      */
@@ -22,7 +22,7 @@ public abstract class BialettiServerClientRepresentation<ServerType extends Bial
      * @param c the connection
      * @param s the server
      */
-    public BialettiServerClientRepresentation(BialettiTCPConnection c, ServerType s) {
+    public BialettiTCPServerClient(BialettiTCPConnection c, ServerType s) {
         connection = c;
         server     = s;
     }
@@ -32,7 +32,7 @@ public abstract class BialettiServerClientRepresentation<ServerType extends Bial
      */
     public BialettiTCPConnection getConnection() { return connection; }
     /**
-     * @return the {@link BialettiServer}
+     * @return the {@link BialettiTCPServer}
      */
     public ServerType getServer() { return server; }
 

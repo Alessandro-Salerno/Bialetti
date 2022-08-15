@@ -1,4 +1,4 @@
-package bialetti.server;
+package bialetti.server.tcp;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -6,10 +6,10 @@ import java.lang.reflect.Method;
 /**
  * Subclass of {@link Thread}
  * Used to handle a client
- * @param <ClientType> the type that defines a client (Subclass of {@link BialettiServerClientRepresentation})
+ * @param <ClientType> the type that defines a client (Subclass of {@link BialettiTCPServerClient})
  * @author Alessandro-Salerno
  */
-class BialettiServerThread<ClientType extends BialettiServerClientRepresentation<?>> extends Thread {
+class BialettiTCPServerThread<ClientType extends BialettiTCPServerClient<?>> extends Thread {
     /**
      * The target client
      */
@@ -17,11 +17,11 @@ class BialettiServerThread<ClientType extends BialettiServerClientRepresentation
     /**
      * The host server
      */
-    private final BialettiServer<ClientType> hostServer;
+    private final BialettiTCPServer<ClientType> hostServer;
     /**
      * The exception handler
      */
-    private final BialettiServerExceptionHandler<ClientType> exceptionHandler;
+    private final BialettiTCPServerExceptionHandler<ClientType> exceptionHandler;
     /**
      * The client's handler method that the thread
      * is tasked to call
@@ -34,10 +34,10 @@ class BialettiServerThread<ClientType extends BialettiServerClientRepresentation
      * @param s the BialettiServer instance of the host server
      * @param sxh the BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(ClientType c,
-                                Method handler,
-                                BialettiServer<ClientType> s,
-                                BialettiServerExceptionHandler<ClientType> sxh) {
+    public BialettiTCPServerThread(ClientType c,
+                                   Method handler,
+                                   BialettiTCPServer<ClientType> s,
+                                   BialettiTCPServerExceptionHandler<ClientType> sxh) {
         client           = c;
         handlerMethod    = handler;
         hostServer       = s;

@@ -45,10 +45,8 @@ public abstract class BialettiExceptionHandler {
      */
     protected final Method getHandlerMethod(Throwable throwable, Class<? extends Annotation> annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
         // Get handler method from the class
-        Method handlerMethod = getClass().getMethod(
-                "on" + throwable.getClass().getSimpleName(),
-                parameterTypes
-        );
+        Method handlerMethod = getClass().getMethod("on" + throwable.getClass().getSimpleName(),
+                                                    parameterTypes);
 
         // Throw NoSuchMethodException if the method is not marked as throwable handler
         if (!handlerMethod.isAnnotationPresent(annotation)) {
