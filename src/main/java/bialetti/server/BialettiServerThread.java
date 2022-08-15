@@ -6,22 +6,22 @@ import java.lang.reflect.Method;
 /**
  * Subclass of {@link Thread}
  * Used to handle a client
- * @param <T> the type that defines a client (Subclass of {@link BialettiServerClientRepresentation})
+ * @param <ClientType> the type that defines a client (Subclass of {@link BialettiServerClientRepresentation})
  * @author Alessandro-Salerno
  */
-class BialettiServerThread<T extends BialettiServerClientRepresentation<?>> extends Thread {
+class BialettiServerThread<ClientType extends BialettiServerClientRepresentation<?>> extends Thread {
     /**
      * The target client
      */
-    private final T client;
+    private final ClientType client;
     /**
      * The host server
      */
-    private final BialettiServer<T> hostServer;
+    private final BialettiServer<ClientType> hostServer;
     /**
      * The exception handler
      */
-    private final BialettiServerExceptionHandler<T> exceptionHandler;
+    private final BialettiServerExceptionHandler<ClientType> exceptionHandler;
     /**
      * The client's handler method that the thread
      * is tasked to call
@@ -34,10 +34,10 @@ class BialettiServerThread<T extends BialettiServerClientRepresentation<?>> exte
      * @param s the BialettiServer instance of the host server
      * @param sxh the BialettiServerExceptionHandler instance
      */
-    public BialettiServerThread(T c,
+    public BialettiServerThread(ClientType c,
                                 Method handler,
-                                BialettiServer<T> s,
-                                BialettiServerExceptionHandler<T> sxh) {
+                                BialettiServer<ClientType> s,
+                                BialettiServerExceptionHandler<ClientType> sxh) {
         client           = c;
         handlerMethod    = handler;
         hostServer       = s;

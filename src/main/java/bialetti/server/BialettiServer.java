@@ -13,10 +13,10 @@ import java.util.List;
 
 /**
  * A Bialetti Server
- * @param <T> the type that defines a client (Subclass of {@link BialettiServerClientRepresentation})
+ * @param <ClientType> the type that defines a client (Subclass of {@link BialettiServerClientRepresentation})
  * @author Alessandro-Salerno
  */
-public abstract class BialettiServer<T extends BialettiServerClientRepresentation<?>> {
+public abstract class BialettiServer<ClientType extends BialettiServerClientRepresentation<?>> {
     /**
      * The port on which the server is hosted
      */
@@ -24,7 +24,7 @@ public abstract class BialettiServer<T extends BialettiServerClientRepresentatio
     /**
      * The event handler for server exceptions
      */
-    protected final BialettiServerExceptionHandler<T> exceptionHandler;
+    protected final BialettiServerExceptionHandler<ClientType> exceptionHandler;
     /**
      *  List of active connections
      */
@@ -43,7 +43,7 @@ public abstract class BialettiServer<T extends BialettiServerClientRepresentatio
      * @param port the port on which the server listens
      * @param sxh an exception handler for the server
      */
-    public BialettiServer(int port, BialettiServerExceptionHandler<T> sxh) {
+    public BialettiServer(int port, BialettiServerExceptionHandler<ClientType> sxh) {
         // Set fields
         serverPort        = port;
         exceptionHandler  = sxh;
@@ -120,7 +120,7 @@ public abstract class BialettiServer<T extends BialettiServerClientRepresentatio
      * @param bialettiConnection The newly established connection
      * @return a client representation (Subclass of {@link BialettiServerClientRepresentation})
      */
-    protected abstract T getNewClient(BialettiConnection bialettiConnection);
+    protected abstract ClientType getNewClient(BialettiConnection bialettiConnection);
     /**
      * What happens when the server is started
      * @apiNote abstract method, should be defined by subclasses
@@ -184,11 +184,11 @@ public abstract class BialettiServer<T extends BialettiServerClientRepresentatio
         /**
          * The thread that handles the connection
          */
-        private final List<BialettiServerThread<T>> mThreads;
+        private final List<BialettiServerThread<ClientType>> mThreads;
         /**
-         * A T (ClientType) instance
+         * A ClientType instance
          */
-        private final T client;
+        private final ClientType client;
 
         /**
          * Default constructor
@@ -261,6 +261,6 @@ public abstract class BialettiServer<T extends BialettiServerClientRepresentatio
          * Getter for the handler thread
          * @return a list of BialettiServerThread instances
          */
-        public List<BialettiServerThread<T>> getThreads() { return mThreads; }
+        public List<BialettiServerThread<ClientType>> getThreads() { return mThreads; }
     }
 }
