@@ -1,5 +1,6 @@
-package bialetti;
+package bialetti.connection.tcp;
 
+import bialetti.connection.BialettiConnection;
 import bialetti.util.BialettiInputStreamReader;
 
 import java.io.IOException;
@@ -7,29 +8,29 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * A wrapper for Java's {@link Socket}
+ * Implementation of {@link BialettiConnection} used to establish or represent a TCP connection
  * @author Alessandro-Salerno
  */
-public class BialettiConnection {
+public class BialettiTCPConnection implements BialettiConnection {
     /**
      * The Java {@link Socket} for the connection
      */
-    protected final Socket connectionSocket;
+    private final Socket connectionSocket;
     /**
      * The connection's {@link BialettiInputStreamReader}
      */
-    protected final BialettiInputStreamReader inputStreamReader;
+    private final BialettiInputStreamReader inputStreamReader;
     /**
      * The connection's {@link java.io.OutputStream}
      */
-    protected final PrintWriter outputPrintWriter;
+    private final PrintWriter outputPrintWriter;
 
     /**
      * Client-side constructor
      * @param address the IP address of the destination host
      * @param port the port of the destination host
      */
-    public BialettiConnection(String address, int port) throws IOException {
+    public BialettiTCPConnection(String address, int port) throws IOException {
         this(new Socket(address, port));
     }
 
@@ -38,12 +39,10 @@ public class BialettiConnection {
      * @param socket the Java {@link Socket} instance
      * @throws  IOException if it is not able to instantiate the {@link BialettiInputStreamReader} or the {@link PrintWriter}
      */
-    public BialettiConnection(Socket socket) throws IOException {
-        connectionSocket = socket;
-
-        // Saves streams
+    public BialettiTCPConnection(Socket socket) throws IOException {
+        connectionSocket  = socket;
         inputStreamReader = new BialettiInputStreamReader(connectionSocket.getInputStream());
-        outputPrintWriter = new PrintWriter(connectionSocket.getOutputStream(), true);
+        outputPrintWriter = new PrintWriter(connectionSocket.getOutputStream());
     }
 
     /**
@@ -51,6 +50,7 @@ public class BialettiConnection {
      * @throws IOException if it fails to read
      * @return the message
      */
+    @Override
     public String receive() throws IOException {
         // Reads the entire stream and returns it in string form
         return inputStreamReader.readall();
@@ -60,6 +60,7 @@ public class BialettiConnection {
      * Sends a string
      * @param data the message to be sent
      */
+    @Override
     public void send(String data) {
         // Sends the string
         outputPrintWriter.print(data);
@@ -68,8 +69,9 @@ public class BialettiConnection {
 
     /**
      * Closes the connection
-     * @throws IOException if an I/O error occurs while closing the connection
+     * @throws Exception if something goes wrong
      */
+    @Override
     public void close() throws Exception {
         getSocket().close();
     }

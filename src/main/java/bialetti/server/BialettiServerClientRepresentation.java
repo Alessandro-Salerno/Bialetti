@@ -1,6 +1,6 @@
 package bialetti.server;
 
-import bialetti.BialettiConnection;
+import bialetti.connection.tcp.BialettiTCPConnection;
 
 /**
  * A representation of a client
@@ -11,7 +11,7 @@ public abstract class BialettiServerClientRepresentation<ServerType extends Bial
     /**
      * The connection on which che client runs on
      */
-    protected final BialettiConnection connection;
+    protected final BialettiTCPConnection connection;
     /**
      * The server handling the connection
      */
@@ -19,18 +19,18 @@ public abstract class BialettiServerClientRepresentation<ServerType extends Bial
 
     /**
      * Constructor
-     * @param c The connection
-     * @param s The server
+     * @param c the connection
+     * @param s the server
      */
-    public BialettiServerClientRepresentation(BialettiConnection c, ServerType s) {
+    public BialettiServerClientRepresentation(BialettiTCPConnection c, ServerType s) {
         connection = c;
         server     = s;
     }
 
     /**
-     * @return the {@link BialettiConnection} to the client
+     * @return the {@link BialettiTCPConnection} to the client
      */
-    public BialettiConnection getConnection() { return connection; }
+    public BialettiTCPConnection getConnection() { return connection; }
     /**
      * @return the {@link BialettiServer}
      */

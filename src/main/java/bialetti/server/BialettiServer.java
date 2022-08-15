@@ -1,7 +1,7 @@
 package bialetti.server;
 
-import bialetti.BialettiConnection;
 import bialetti.annotations.BialettiHandleMethod;
+import bialetti.connection.tcp.BialettiTCPConnection;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -120,7 +120,7 @@ public abstract class BialettiServer<ClientType extends BialettiServerClientRepr
      * @param bialettiConnection The newly established connection
      * @return a client representation (Subclass of {@link BialettiServerClientRepresentation})
      */
-    protected abstract ClientType getNewClient(BialettiConnection bialettiConnection);
+    protected abstract ClientType getNewClient(BialettiTCPConnection bialettiTCPConnection);
     /**
      * What happens when the server is started
      * @apiNote abstract method, should be defined by subclasses
@@ -180,7 +180,7 @@ public abstract class BialettiServer<ClientType extends BialettiServerClientRepr
      * provides a server-specific close() method
      * @author Alessandro-Salerno
      */
-    protected final class BialettiServerConnection extends BialettiConnection {
+    protected final class BialettiServerConnection extends BialettiTCPConnection {
         /**
          * The thread that handles the connection
          */

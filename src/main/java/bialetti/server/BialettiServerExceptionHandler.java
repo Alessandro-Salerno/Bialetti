@@ -11,7 +11,8 @@ import java.lang.reflect.Method;
  * @param <ClientType> the type that defines the client (Subclass of {@link BialettiServerClientRepresentation})
  * @author Alessandro-Salerno
  */
-public abstract class BialettiServerExceptionHandler<ClientType extends BialettiServerClientRepresentation<?>> extends BialettiExceptionHandler {
+public abstract class BialettiServerExceptionHandler<ClientType extends BialettiServerClientRepresentation<?>>
+        extends BialettiExceptionHandler {
     /**
      * Calls the right handler method for a given throwable
      * @param throwable the exception itself
