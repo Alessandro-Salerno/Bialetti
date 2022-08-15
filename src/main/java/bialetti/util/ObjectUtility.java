@@ -30,11 +30,11 @@ public class ObjectUtility {
      * @param action the action to perform if the condition is met (Example: method -> System.out.println(method.toString()))
      */
     public void forEachMethodIf(Function<? super Method, Boolean> condition, Consumer<? super Method> action) {
-        Arrays.stream(object.getClass().getMethods()).parallel().forEach(method -> {
-            if (condition.apply(method)) {
-                action.accept(method);
-            }
-        });
+        Arrays.stream(object.getClass()                         // Get the class that represents the object
+                            .getMethods())                      // Get the set of all methods
+                                .parallel()                     // Parallelize the stream
+                                .filter(condition::apply)       // Filter items based on weather they meet the condition or not
+                                .forEach(action);               // Run for each item
     }
 
     /**
@@ -42,7 +42,8 @@ public class ObjectUtility {
      * @param annotation the annotation required
      * @param action the action to be performed
      */
-    public void forEachMethodWithAnnotation(Class<? extends Annotation> annotation, Consumer<? super Method> action) {
+    public void forEachMethodWithAnnotation(Class<? extends Annotation> annotation,
+                                            Consumer<? super Method> action) {
         forEachMethodIf(method -> method.isAnnotationPresent(annotation), action);
     }
 }
