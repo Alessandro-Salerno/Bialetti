@@ -36,7 +36,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
     private Thread listenThread;
 
     /**
-     * constructor
+     * Constructor
      * @param port the port on which the server listens
      * @param sxh an exception handler for the server
      */
@@ -50,6 +50,19 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         // Open connection
         serverSocket = openServerSocket();
         start();
+    }
+
+    /**
+     * Constructor
+     * @param port the port
+     */
+    public BialettiTCPServer(int port) {
+        this(port, new BialettiTCPServerExceptionHandler<ClientType>() {
+            @Override
+            public void onThrowable(Throwable throwable) {
+                super.onThrowable(throwable);
+            }
+        });
     }
 
     /**

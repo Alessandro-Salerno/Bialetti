@@ -44,6 +44,19 @@ public abstract class BialettiUDPServer extends BialettiServer {
     }
 
     /**
+     * Constructor
+     * @param port the port
+     */
+    public BialettiUDPServer(int port) {
+        this(port, new BialettiServerExceptionHandler() {
+            @Override
+            public void onThrowable(Throwable throwable) {
+                super.onThrowable(throwable);
+            }
+        });
+    }
+
+    /**
      * Starts the server
      */
     @Override
