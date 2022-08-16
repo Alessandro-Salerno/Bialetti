@@ -69,7 +69,7 @@ abstract class BialettiUDPConnection {
      * @throws IOException if an I/O error occurs
      */
     public void send(byte[] data, InetAddress address, int port) throws IOException {
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
+        DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
         connectionSocket.send(packet);
     }
 
@@ -88,18 +88,6 @@ abstract class BialettiUDPConnection {
     /**
      * Sends a bytearray
      * @param data the bytearray containing the message
-     * @param address the address of the target socket
-     * @param port the port of the target socket
-     * @throws IOException if an I/O error occurs
-     */
-    public void send(byte[] data,
-                     String address,
-                     int port) throws IOException { send(data,
-                                                         address.getBytes(),
-                                                         port); }
-    /**
-     * Sends a bytearray
-     * @param data the bytearray containing the message
      * @param address the address of the target socket (As a byte[])
      * @param port the port of the target socket
      * @throws IOException if an I/O error occurs
@@ -107,7 +95,19 @@ abstract class BialettiUDPConnection {
     public void send(byte[] data,
                      byte[] address,
                      int port) throws IOException { send(data,
-                                                         InetAddress.getByAddress(address),
+                                                         new String(address),
+                                                         port); }
+    /**
+     * Sends a bytearray
+     * @param data the bytearray containing the message
+     * @param address the address of the target socket
+     * @param port the port of the target socket
+     * @throws IOException if an I/O error occurs
+     */
+    public void send(byte[] data,
+                     String address,
+                     int port) throws IOException { send(data,
+                                                         InetAddress.getByName(address),
                                                          port); }
     /**
      * Sends a string

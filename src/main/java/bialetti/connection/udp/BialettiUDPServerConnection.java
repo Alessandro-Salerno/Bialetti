@@ -1,6 +1,7 @@
 package bialetti.connection.udp;
 
-import java.net.*;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 
 /**
  * Subclass of {@link BialettiUDPConnection} that provides a server-specific interface for connections
