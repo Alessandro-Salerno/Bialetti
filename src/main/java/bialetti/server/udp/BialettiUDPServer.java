@@ -27,6 +27,10 @@ public abstract class BialettiUDPServer extends BialettiServer {
      * The list of all threads
      */
     private final List<BialettiUDPServerThread> threads;
+    /**
+     * The thread that keeps the server alive
+     */
+    private Thread dummyThread;
 
     /**
      * Constructor
@@ -89,7 +93,8 @@ public abstract class BialettiUDPServer extends BialettiServer {
         });
 
         // Create a dummy thread to keep thee server alive
-        new Thread(() -> { while (!Thread.interrupted()) { } }).start();
+        dummyThread = new Thread(() -> { while (!Thread.interrupted()) { } });
+        dummyThread.start();
 
         try { onStart(); }
         catch (Exception e) {
@@ -109,6 +114,7 @@ public abstract class BialettiUDPServer extends BialettiServer {
                 .forEach(Thread::interrupt);
 
         // Close the server
+        dummyThread.interrupt();
         serverConnection.close();
 
         try { onStop(); }
