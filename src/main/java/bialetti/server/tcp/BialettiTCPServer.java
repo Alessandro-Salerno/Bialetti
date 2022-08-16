@@ -192,10 +192,11 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
             // Spawn a thread for each handle method
             new ObjectUtility(client).forEachMethodWithAnnotation(BialettiHandleMethod.class,
                                                                   method -> {
-                BialettiTCPServerThread<ClientType> newThread = new BialettiTCPServerThread<>(client,
-                                                                                              method,
-                                                                                              BialettiTCPServer.this,
-                                                                                              exceptionHandler) {
+                BialettiTCPServerThread<ClientType> newThread
+                        = new BialettiTCPServerThread<>(client,
+                                                        method,
+                                                        BialettiTCPServer.this,
+                                                        exceptionHandler) {
                     @Override
                     public void run() {
                         // Make sure that the thread does not start before the start thread
