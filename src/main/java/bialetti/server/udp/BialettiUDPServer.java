@@ -4,6 +4,7 @@ import bialetti.annotations.BialettiHandleMethod;
 import bialetti.connection.udp.BialettiUDPServerConnection;
 import bialetti.server.BialettiServer;
 import bialetti.server.BialettiServerExceptionHandler;
+import bialetti.util.MethodThread;
 import bialetti.util.ObjectUtility;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public abstract class BialettiUDPServer extends BialettiServer {
     /**
      * The list of all threads
      */
-    private final List<BialettiUDPServerThread> threads;
+    private final List<MethodThread> threads;
     /**
      * The thread that keeps the server alive
      */
@@ -74,10 +75,11 @@ public abstract class BialettiUDPServer extends BialettiServer {
          */
         new ObjectUtility(this).forEachMethodWithAnnotation(BialettiHandleMethod.class,
                                                                method -> {
-            BialettiUDPServerThread thread
-                    = new BialettiUDPServerThread(method,
-                                                  BialettiUDPServer.this,
-                                                  exceptionHandler) {
+            MethodThread newThread
+                    = new MethodThread(e -> { exceptionHandler.raise(e,
+                                                                     BialettiUDPServer.this); },
+                                       BialettiUDPServer.this,
+                                       method) {
                 @Override
                 public void run() {
                     try { startThread.join(); }
@@ -88,8 +90,8 @@ public abstract class BialettiUDPServer extends BialettiServer {
             };
 
             // Start the thread and add it to the list of threads
-            thread.start();
-            threads.add(thread);
+            newThread.start();
+            threads.add(newThread);
         });
 
         // Create a dummy thread to keep thee server alive

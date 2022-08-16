@@ -3,6 +3,7 @@ package bialetti.server.tcp;
 import bialetti.annotations.BialettiHandleMethod;
 import bialetti.connection.tcp.BialettiTCPConnection;
 import bialetti.server.BialettiServer;
+import bialetti.util.MethodThread;
 import bialetti.util.ObjectUtility;
 
 import java.io.IOException;
@@ -179,7 +180,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         /**
          * The thread that handles the connection
          */
-        private final List<BialettiTCPServerThread<ClientType>> mThreads;
+        private final List<MethodThread> mThreads;
         /**
          * A ClientType instance
          */
@@ -207,11 +208,12 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
             // Spawn a thread for each handle method
             new ObjectUtility(client).forEachMethodWithAnnotation(BialettiHandleMethod.class,
                                                                   method -> {
-                BialettiTCPServerThread<ClientType> newThread
-                        = new BialettiTCPServerThread<>(client,
-                                                        method,
-                                                        BialettiTCPServer.this,
-                                                        exceptionHandler) {
+                MethodThread newThread
+                        = new MethodThread(e -> { exceptionHandler.raise(e,
+                                                                         client,
+                                                                         BialettiTCPServer.this); },
+                                           client,
+                                           method) {
                     @Override
                     public void run() {
                         // Make sure that the thread does not start before the start thread
@@ -258,6 +260,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
          * Getter for the handler thread
          * @return a list of BialettiServerThread instances
          */
-        public List<BialettiTCPServerThread<ClientType>> getThreads() { return mThreads; }
+        public List<MethodThread> getThreads() { return mThreads; }
     }
 }
