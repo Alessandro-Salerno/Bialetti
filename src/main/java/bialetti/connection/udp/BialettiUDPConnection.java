@@ -7,6 +7,7 @@ import java.net.InetAddress;
 
 /**
  * A UDP connection
+ * @author Alessandro-Salerno
  * @hidden
  */
 abstract class BialettiUDPConnection {
@@ -105,6 +106,9 @@ abstract class BialettiUDPConnection {
      */
     public void send(String data, InetAddress address, int port) throws IOException { send(data.getBytes(), address, port); }
 
+    /**
+     * Closes the connection
+     */
     public void close() {
         connectionSocket.close();
     }
