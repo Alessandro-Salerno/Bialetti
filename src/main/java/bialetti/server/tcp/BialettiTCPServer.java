@@ -70,7 +70,9 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
      * @param message the message to be broadcast
      */
     public void broadcast(String message) {
-        activeConnections.forEach(connection -> connection.send(message));
+        activeConnections.stream()
+                          .parallel()
+                          .forEach(conn -> conn.send(message));
     }
 
     /**
