@@ -36,7 +36,7 @@ public class BialettiTCPConnection {
     /**
      * Server-side constructor
      * @param socket the Java {@link Socket} instance
-     * @throws  IOException if it is not able to instantiate the {@link BialettiInputStreamReader} or the {@link PrintWriter}
+     * @throws IOException if it is not able to instantiate the {@link BialettiInputStreamReader} or the {@link PrintWriter}
      */
     public BialettiTCPConnection(Socket socket) throws IOException {
         connectionSocket  = socket;
