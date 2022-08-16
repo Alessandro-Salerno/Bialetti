@@ -80,7 +80,11 @@ abstract class BialettiUDPConnection {
      * @param port the port of the target socket
      * @throws IOException if an I/O error occurs
      */
-    public void send(String data, String address, int port) throws IOException { send(data.getBytes(), address, port); }
+    public void send(String data,
+                     String address,
+                     int port) throws IOException { send(data.getBytes(),
+                                                         address,
+                                                         port); }
     /**
      * Sends a bytearray
      * @param data the bytearray containing the message
@@ -88,7 +92,11 @@ abstract class BialettiUDPConnection {
      * @param port the port of the target socket
      * @throws IOException if an I/O error occurs
      */
-    public void send(byte[] data, String address, int port) throws IOException { send(data, address.getBytes(), port); }
+    public void send(byte[] data,
+                     String address,
+                     int port) throws IOException { send(data,
+                                                         address.getBytes(),
+                                                         port); }
     /**
      * Sends a bytearray
      * @param data the bytearray containing the message
@@ -96,7 +104,11 @@ abstract class BialettiUDPConnection {
      * @param port the port of the target socket
      * @throws IOException if an I/O error occurs
      */
-    public void send(byte[] data, byte[] address, int port) throws IOException { send(data, InetAddress.getByAddress(address), port); }
+    public void send(byte[] data,
+                     byte[] address,
+                     int port) throws IOException { send(data,
+                                                         InetAddress.getByAddress(address),
+                                                         port); }
     /**
      * Sends a string
      * @param data the string containing the message
@@ -104,7 +116,11 @@ abstract class BialettiUDPConnection {
      * @param port the port of the target socket
      * @throws IOException if an I/O error occurs
      */
-    public void send(String data, InetAddress address, int port) throws IOException { send(data.getBytes(), address, port); }
+    public void send(String data,
+                     InetAddress address,
+                     int port) throws IOException { send(data.getBytes(),
+                                                         address,
+                                                         port); }
 
     /**
      * Closes the connection
