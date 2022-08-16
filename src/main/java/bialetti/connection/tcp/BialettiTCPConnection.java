@@ -1,6 +1,5 @@
 package bialetti.connection.tcp;
 
-import bialetti.connection.BialettiConnection;
 import bialetti.util.BialettiInputStreamReader;
 
 import java.io.IOException;
@@ -8,10 +7,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * Implementation of {@link BialettiConnection} used to establish or represent a TCP connection
+ * Used to establish or represent a TCP connection
  * @author Alessandro-Salerno
  */
-public class BialettiTCPConnection implements BialettiConnection {
+public class BialettiTCPConnection {
     /**
      * The Java {@link Socket} for the connection
      */
@@ -50,7 +49,6 @@ public class BialettiTCPConnection implements BialettiConnection {
      * @throws IOException if it fails to read
      * @return the message
      */
-    @Override
     public String receive() throws IOException {
         // Reads the entire stream and returns it in string form
         return inputStreamReader.readall();
@@ -60,7 +58,6 @@ public class BialettiTCPConnection implements BialettiConnection {
      * Sends a string
      * @param data the message to be sent
      */
-    @Override
     public void send(String data) {
         // Sends the string
         outputPrintWriter.print(data);
@@ -71,7 +68,6 @@ public class BialettiTCPConnection implements BialettiConnection {
      * Closes the connection
      * @throws Exception if something goes wrong
      */
-    @Override
     public void close() throws Exception {
         getSocket().close();
     }

@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 /**
  * Bialetti utility class that provides methods to inspect objects
- * @authr Alessandro-Salerno
+ * @author Alessandro-Salerno
  */
 public class ObjectUtility {
     /**
