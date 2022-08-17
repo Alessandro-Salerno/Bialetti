@@ -1,7 +1,7 @@
 package bialetti.util;
 
 import bialetti.BialettiExceptionHandler;
-import bialetti.annotations.exceptions.BialettiGenericExceptionHandlerMethod;
+import bialetti.annotations.exceptions.BialettiExceptionHandlerMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -60,7 +60,7 @@ public class MethodThread extends Thread {
                         Object... args) {
         this(new BialettiExceptionHandler() {
             @Override
-            @BialettiGenericExceptionHandlerMethod
+            @BialettiExceptionHandlerMethod
             public void onThrowable(Throwable throwable) {
                 handler.accept(throwable);
             }
@@ -74,7 +74,7 @@ public class MethodThread extends Thread {
 
             catch (InvocationTargetException e) {
                 // Call handler method
-                exceptionHandler.raise(e.getCause());
+                exceptionHandler.raiseException(e.getCause());
             }
 
             catch (IllegalAccessException e) {

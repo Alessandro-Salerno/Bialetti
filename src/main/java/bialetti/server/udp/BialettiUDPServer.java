@@ -1,11 +1,8 @@
 package bialetti.server.udp;
 
-import bialetti.annotations.BialettiHandleMethod;
 import bialetti.connection.udp.BialettiUDPServerSocket;
 import bialetti.server.BialettiServer;
-import bialetti.server.BialettiServerExceptionHandler;
 import bialetti.util.MethodThread;
-import bialetti.util.ObjectUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +18,6 @@ public abstract class BialettiUDPServer extends BialettiServer {
      */
     private final BialettiUDPServerSocket serverSocket;
     /**
-     * The exception handler
-     */
-    private final BialettiServerExceptionHandler exceptionHandler;
-    /**
-     * The list of all threads
-     */
-    private final List<MethodThread> threads;
-    /**
      * The thread that keeps the server alive
      */
     private Thread dummyThread;
@@ -36,84 +25,20 @@ public abstract class BialettiUDPServer extends BialettiServer {
     /**
      * Constructor
      * @param port the port on which to open the server
-     * @param sxh the exception handler
-     */
-    public BialettiUDPServer(int port, BialettiServerExceptionHandler sxh) {
-        super(port);
-
-        exceptionHandler = sxh;
-        threads          = new ArrayList<>();
-
-        serverSocket = openServerSocket();
-        start();
-    }
-
-    /**
-     * Constructor
-     * @param port the port
      */
     public BialettiUDPServer(int port) {
-        this(port, new BialettiServerExceptionHandler() {
-            @Override
-            public void onThrowable(Throwable throwable) {
-                super.onThrowable(throwable);
-            }
-        });
-    }
+        super(port);
 
-    /**
-     * Starts the server
-     */
-    @Override
-    public void start() {
-        // Get the thread on which the method is running
-        Thread startThread = Thread.currentThread();
-
-        /*
-         * Spawn server threads for each method with the BialettiHandleMethod annotation
-         * Uses internal iteration
-         */
-        new ObjectUtility(this).forEachMethodWithAnnotation(BialettiHandleMethod.class,
-                                                               method -> {
-            MethodThread newThread
-                    = new MethodThread((e) -> exceptionHandler.raise(e,
-                                                                     BialettiUDPServer.this),
-                                       BialettiUDPServer.this,
-                                       method) {
-                @Override
-                public void run() {
-                    try { startThread.join(); }
-                    catch (InterruptedException ignored) { }
-
-                    super.run();
-                }
-            };
-
-            // Start the thread and add it to the list of threads
-            newThread.start();
-            threads.add(newThread);
-        });
-
-        // Create a dummy thread to keep thee server alive
-        dummyThread = new Thread(() -> { while (!Thread.interrupted()) { } });
-        dummyThread.start();
-
-        try { onStart(); }
-        catch (Exception e) {
-            // Call handler method
-            exceptionHandler.raise(e, this);
-        }
+        serverSocket = openServerSocket();
+        init();
     }
 
     /**
      * Stops the server
      */
     @Override
-    public void stop() {
-        // Stop all threads
-        threads.stream()
-                .parallel()
-                .forEach(Thread::interrupt);
+    public final void stop() {
+        super.stop();
 
         // Close the server
         dummyThread.interrupt();
@@ -122,7 +47,25 @@ public abstract class BialettiUDPServer extends BialettiServer {
         try { onStop(); }
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.raise(e, this);
+            raiseException(e);
+        }
+    }
+
+    /**
+     * Starts the server
+     */
+    @Override
+    protected void start() {
+        super.start();
+
+        // Create a dummy thread to keep thee server alive
+        dummyThread = new Thread(() -> { while (!Thread.interrupted()) { } });
+        dummyThread.start();
+
+        try { onStart(); }
+        catch (Exception e) {
+            // Call handler method
+            raiseException(e);
         }
     }
 
@@ -139,7 +82,7 @@ public abstract class BialettiUDPServer extends BialettiServer {
         try { nSocket = new BialettiUDPServerSocket(getPort(), 512); }
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.raise(e, this);
+            raiseException(e);
             nSocket = null;
         }
 

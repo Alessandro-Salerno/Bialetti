@@ -1,6 +1,6 @@
 package bialetti;
 
-import bialetti.annotations.exceptions.BialettiGenericExceptionHandlerMethod;
+import bialetti.annotations.exceptions.BialettiExceptionHandlerMethod;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -10,14 +10,14 @@ import java.lang.reflect.Method;
  * @author Alessandro-Salerno
  */
 public abstract class BialettiExceptionHandler {
-    /*
+    /**
      * Calls the right handler method for the throwable
      * @param throwable The Exception itself
      */
-    public final void raise(Throwable throwable) {
+    public final void raiseException(Throwable throwable) {
         try {
             Method handlerMethod = getHandlerMethod(
-                    throwable, BialettiGenericExceptionHandlerMethod.class,
+                    throwable, BialettiExceptionHandlerMethod.class,
                     throwable.getClass()
             );
 
@@ -56,7 +56,7 @@ public abstract class BialettiExceptionHandler {
         return handlerMethod;
     }
 
-    @BialettiGenericExceptionHandlerMethod
+    @BialettiExceptionHandlerMethod
     public void onThrowable(Throwable throwable) {
         throwable.printStackTrace();
     }

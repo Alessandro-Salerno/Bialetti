@@ -1,5 +1,6 @@
 package bialetti.server.tcp;
 
+import bialetti.BialettiService;
 import bialetti.connection.tcp.BialettiTCPConnection;
 
 /**
@@ -7,7 +8,7 @@ import bialetti.connection.tcp.BialettiTCPConnection;
  * @param <ServerType> the server class
  * @author Alessandro-Salerno
  */
-public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServer<?>> {
+public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServer<?>> extends BialettiService {
     /**
      * The connection on which che client runs on
      */
@@ -25,6 +26,40 @@ public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServ
     public BialettiTCPServerClient(BialettiTCPConnection c, ServerType s) {
         connection = c;
         server     = s;
+
+        init();
+    }
+
+    /**
+     * Starts up the client
+     */
+    @Override
+    protected final void start() {
+        super.start();
+
+        try { onConnect(); }
+        catch (Exception e) {
+            // Call handler method
+            raiseException(e);
+        }
+    }
+
+    /**
+     * Shuts down the client
+     */
+    @Override
+    public final void stop() {
+        super.stop();
+
+        try {
+            connection.close();
+            onClose();
+        }
+
+        catch (Exception e) {
+            // Call handler method
+            raiseException(e);
+        }
     }
 
     /**

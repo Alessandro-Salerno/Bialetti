@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marker annotation
- * Makes the method a valid connection exception handler
+ * Makes the method a valid exception handler
  * @apiNote used on methods of {@link bialetti.BialettiExceptionHandler}
  * @author Alessandro-Salerno
  */

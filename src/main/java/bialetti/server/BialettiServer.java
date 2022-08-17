@@ -1,6 +1,8 @@
 package bialetti.server;
 
-public abstract class BialettiServer {
+import bialetti.BialettiService;
+
+public abstract class BialettiServer extends BialettiService {
     /**
      * The port on which the server is hosted
      */
@@ -14,16 +16,6 @@ public abstract class BialettiServer {
      * @return the server's port
      */
     public int getPort() { return serverPort; }
-
-    /**
-     * Starts the server
-     * @apiNote abstract method, should be defined by subclasses
-     */
-    public abstract void start();
-    /**
-     * Stops the server
-     */
-    public abstract void stop();
 
     /**
      * What happens when the server is started

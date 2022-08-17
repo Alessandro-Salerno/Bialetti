@@ -4,10 +4,8 @@ import bialetti.annotations.BialettiHandleMethod;
 import bialetti.connection.tcp.BialettiTCPConnection;
 import bialetti.server.BialettiServer;
 import bialetti.util.MethodThread;
-import bialetti.util.ObjectUtility;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,10 +17,6 @@ import java.util.List;
  * @author Alessandro-Salerno
  */
 public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClient<?>> extends BialettiServer {
-    /**
-     * The event handler for server exceptions
-     */
-    private final BialettiTCPServerExceptionHandler<ClientType> exceptionHandler;
     /**
      *  List of active connections
      */
@@ -38,32 +32,16 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
     /**
      * Constructor
-     * @param port the port on which the server listens
-     * @param sxh an exception handler for the server
+     * @param port the port on which the server liste
      */
-    public BialettiTCPServer(int port, BialettiTCPServerExceptionHandler<ClientType> sxh) {
+    public BialettiTCPServer(int port) {
         super(port);
 
         // Set fields
-        exceptionHandler  = sxh;
         activeConnections = new ArrayList<>();
-
-        // Open connection
         serverSocket = openServerSocket();
-        start();
-    }
 
-    /**
-     * Constructor
-     * @param port the port
-     */
-    public BialettiTCPServer(int port) {
-        this(port, new BialettiTCPServerExceptionHandler<ClientType>() {
-            @Override
-            public void onThrowable(Throwable throwable) {
-                super.onThrowable(throwable);
-            }
-        });
+        init();
     }
 
     /**
@@ -77,40 +55,17 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
     }
 
     /**
-     * Starts the server
-     */
-    @Override
-    public void start() {
-        if (!serverSocket.isBound()) {
-            // Reopen socket]
-            try { serverSocket.bind(new InetSocketAddress("", getPort())); }
-            catch (Exception e) {
-                // Call handler method
-                exceptionHandler.raise(e, this);
-            }
-        }
-
-        // Start listen thread
-        listenThread = new Thread(this::listen);
-        listenThread.start();
-
-        try { onStart(); }
-        catch (Exception e) {
-            // Call handler method
-            exceptionHandler.raise(e, this);
-        }
-    }
-
-    /**
      * Stops the server
      */
     @Override
-    public void stop() {
+    public final void stop() {
+        super.stop();
+
         synchronized (activeConnections) {
             // Close all connections
             activeConnections.stream()
                               .parallel()
-                              .forEach(BialettiServerConnection::justClose);
+                              .forEach(c -> c.getClient().stop());
 
             // Clear list of active connections and ensure that no other thread can access it
             activeConnections.clear();
@@ -122,7 +77,25 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         try { onStop(); }
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.raise(e, this);
+            raiseException(e);
+        }
+    }
+
+    /**
+     * Starts the server
+     */
+    @Override
+    protected final void start() {
+        super.start();
+
+        // Start listening
+        listenThread = new Thread(this::listen);
+        listenThread.start();
+
+        try { onStart(); }
+        catch (Exception e) {
+            // Call handler method
+            raiseException(e);
         }
     }
 
@@ -141,7 +114,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         try { nServer = new ServerSocket(getPort()); }
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.raise(e, this);
+            raiseException(e);
             nServer = null;
         }
 
@@ -167,7 +140,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         // Exception handler
         catch (Exception e) {
             // Call handler method
-            exceptionHandler.raise(e, this);
+            raiseException(e);
         }
     }
 
@@ -177,10 +150,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
      * @author Alessandro-Salerno
      */
     private final class BialettiServerConnection extends BialettiTCPConnection {
-        /**
-         * The thread that handles the connection
-         */
-        private final List<MethodThread> mThreads;
         /**
          * A ClientType instance
          */
@@ -193,43 +162,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
          */
         public BialettiServerConnection(Socket socket) throws IOException {
             super(socket);
-            mThreads = new ArrayList<>();
-            client   = getNewClient(this);
-
-            // Create thread to handle the onConnect Event
-            Thread startThread = new Thread(() -> {
-                try { client.onConnect(); }
-                catch (Exception e) {
-                    // Call handler method
-                    exceptionHandler.raise(e);
-                }
-            });
-
-            // Spawn a thread for each handle method
-            new ObjectUtility(client).forEachMethodWithAnnotation(BialettiHandleMethod.class,
-                                                                  method -> {
-                MethodThread newThread
-                        = new MethodThread((e) -> exceptionHandler.raise(e,
-                                                                         client,
-                                                                         BialettiTCPServer.this),
-                                           client,
-                                           method) {
-                    @Override
-                    public void run() {
-                        // Make sure that the thread does not start before the start thread
-                        try { startThread.join(); }
-                        catch (InterruptedException ignored) { }
-
-                        super.run();
-                    }
-                };
-
-                newThread.start();
-                mThreads.add(newThread);
-            });
-
-            // Call onConnect handler via new thread
-            startThread.start();
+            client = getNewClient(this);
         }
 
         /**
@@ -247,25 +180,16 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
          * Closes the connection without removing it from the list
          */
         public void justClose() {
-            try {
-                super.close();
-                client.onClose();
-
-                getThreads().stream()
-                             .parallel()
-                             .forEach(Thread::interrupt);
-            }
-
+            try { super.close(); }
             catch (Exception e) {
                 // Call handler method
-                exceptionHandler.raise(e, client, BialettiTCPServer.this);
+                client.raiseException(e);
             }
         }
 
         /**
-         * Getter for the handler thread
-         * @return a list of BialettiServerThread instances
+         * @return the client
          */
-        public List<MethodThread> getThreads() { return mThreads; }
+        public ClientType getClient() { return client; }
     }
 }
