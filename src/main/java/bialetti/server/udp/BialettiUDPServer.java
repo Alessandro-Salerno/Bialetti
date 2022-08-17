@@ -76,8 +76,8 @@ public abstract class BialettiUDPServer extends BialettiServer {
         new ObjectUtility(this).forEachMethodWithAnnotation(BialettiHandleMethod.class,
                                                                method -> {
             MethodThread newThread
-                    = new MethodThread(e -> { exceptionHandler.raise(e,
-                                                                     BialettiUDPServer.this); },
+                    = new MethodThread((e) -> exceptionHandler.raise(e,
+                                                                     BialettiUDPServer.this),
                                        BialettiUDPServer.this,
                                        method) {
                 @Override

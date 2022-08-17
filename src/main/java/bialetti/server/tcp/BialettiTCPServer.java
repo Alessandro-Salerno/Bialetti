@@ -209,9 +209,9 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
             new ObjectUtility(client).forEachMethodWithAnnotation(BialettiHandleMethod.class,
                                                                   method -> {
                 MethodThread newThread
-                        = new MethodThread(e -> { exceptionHandler.raise(e,
+                        = new MethodThread((e) -> exceptionHandler.raise(e,
                                                                          client,
-                                                                         BialettiTCPServer.this); },
+                                                                         BialettiTCPServer.this),
                                            client,
                                            method) {
                     @Override
