@@ -22,9 +22,8 @@ public abstract class BialettiServer {
     public abstract void start();
     /**
      * Stops the server
-     * @throws Exception if something goes wrong
      */
-    public abstract void stop() throws Exception;
+    public abstract void stop();
 
     /**
      * What happens when the server is started

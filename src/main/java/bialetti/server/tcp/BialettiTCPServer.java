@@ -105,12 +105,12 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
      * Stops the server
      */
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         synchronized (activeConnections) {
             // Close all connections
-            for (BialettiServerConnection connection : activeConnections) {
-                connection.justClose();
-            }
+            activeConnections.stream()
+                              .parallel()
+                              .forEach(BialettiServerConnection::justClose);
 
             // Clear list of active connections and ensure that no other thread can access it
             activeConnections.clear();
@@ -234,26 +234,32 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
         /**
          * Closes the connection to the client
-         * @throws Exception if the super method throws one
-         * @throws Exception if the onClose handler throws one
          */
         @Override
-        public void close() throws Exception {
+        public void close() {
             synchronized (activeConnections) {
-                super.close();
+                justClose();
                 activeConnections.remove(this);
-                client.onClose();
-                getThreads().stream().parallel().forEach(Thread::interrupt);
             }
         }
 
         /**
          * Closes the connection without removing it from the list
          */
-        public void justClose() throws Exception {
-            super.close();
-            client.onClose();
-            getThreads().stream().parallel().forEach(Thread::interrupt);
+        public void justClose() {
+            try {
+                super.close();
+                client.onClose();
+
+                getThreads().stream()
+                             .parallel()
+                             .forEach(Thread::interrupt);
+            }
+
+            catch (Exception e) {
+                // Call handler method
+                exceptionHandler.raise(e, client, BialettiTCPServer.this);
+            }
         }
 
         /**
