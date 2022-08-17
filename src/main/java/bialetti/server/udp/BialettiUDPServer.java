@@ -1,7 +1,7 @@
 package bialetti.server.udp;
 
 import bialetti.annotations.BialettiHandleMethod;
-import bialetti.connection.udp.BialettiUDPServerConnection;
+import bialetti.connection.udp.BialettiUDPServerSocket;
 import bialetti.server.BialettiServer;
 import bialetti.server.BialettiServerExceptionHandler;
 import bialetti.util.MethodThread;
@@ -16,10 +16,10 @@ import java.util.List;
  */
 public abstract class BialettiUDPServer extends BialettiServer {
     /**
-     * The connection on which the server listens for incoming requests
+     * The socket on which the server listens for incoming requests
      * and sends outgoing replies
      */
-    private final BialettiUDPServerConnection serverConnection;
+    private final BialettiUDPServerSocket serverSocket;
     /**
      * The exception handler
      */
@@ -44,7 +44,7 @@ public abstract class BialettiUDPServer extends BialettiServer {
         exceptionHandler = sxh;
         threads          = new ArrayList<>();
 
-        serverConnection = openServerSocket();
+        serverSocket = openServerSocket();
         start();
     }
 
@@ -117,7 +117,7 @@ public abstract class BialettiUDPServer extends BialettiServer {
 
         // Close the server
         dummyThread.interrupt();
-        serverConnection.close();
+        serverSocket.close();
 
         try { onStop(); }
         catch (Exception e) {
@@ -129,20 +129,20 @@ public abstract class BialettiUDPServer extends BialettiServer {
     /**
      * @return the UDP connection used by the server
      */
-    public BialettiUDPServerConnection getConnection() { return serverConnection; }
+    public BialettiUDPServerSocket getConnection() { return serverSocket; }
 
     /**
-     * @return a {@link BialettiUDPServerConnection} instance
+     * @return a {@link BialettiUDPServerSocket} instance
      */
-    private BialettiUDPServerConnection openServerSocket() {
-        BialettiUDPServerConnection nConnection;
-        try { nConnection = new BialettiUDPServerConnection(getPort(), 512); }
+    private BialettiUDPServerSocket openServerSocket() {
+        BialettiUDPServerSocket nSocket;
+        try { nSocket = new BialettiUDPServerSocket(getPort(), 512); }
         catch (Exception e) {
             // Call handler method
             exceptionHandler.raise(e, this);
-            nConnection = null;
+            nSocket = null;
         }
 
-        return nConnection;
+        return nSocket;
     }
 }
