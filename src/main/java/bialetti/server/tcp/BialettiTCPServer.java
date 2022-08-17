@@ -25,10 +25,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
      * The socket on which the server listens for new connections
      */
     private final ServerSocket serverSocket;
-    /**
-     * The thread on which the server's listen method is run
-     */
-    private Thread listenThread;
 
     /**
      * Constructor
@@ -42,6 +38,27 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         serverSocket = openServerSocket();
 
         init();
+    }
+
+    /**
+     * Listens for incoming connections
+     * @apiNote runs on a separate thread
+     */
+    @BialettiHandleMethod
+    public final void listen() {
+        try {
+            // Wait for a client to connect
+            BialettiServerConnection newConnection = new BialettiServerConnection(serverSocket.accept());
+
+            // Append client to the list of connected clients
+            activeConnections.add(newConnection);
+        }
+
+        // Exception handler
+        catch (Exception e) {
+            // Call handler method
+            raiseException(e);
+        }
     }
 
     /**
@@ -71,9 +88,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
             activeConnections.clear();
         }
 
-        // Stop listening
-        listenThread.interrupt();
-
         try { onStop(); }
         catch (Exception e) {
             // Call handler method
@@ -87,10 +101,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
     @Override
     protected final void start() {
         super.start();
-
-        // Start listening
-        listenThread = new Thread(this::listen);
-        listenThread.start();
 
         try { onStart(); }
         catch (Exception e) {
@@ -119,29 +129,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         }
 
         return nServer;
-    }
-
-    /**
-     * Listens for incoming connections
-     * @apiNote runs on a separate thread
-     */
-    private void listen() {
-        try {
-            // Accept connections forever
-            while (!Thread.interrupted()) {
-                // Wait for a client to connect
-                BialettiServerConnection newConnection = new BialettiServerConnection(serverSocket.accept());
-
-                // Append client to the list of connected clients
-                activeConnections.add(newConnection);
-            }
-        }
-
-        // Exception handler
-        catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-        }
     }
 
     /**

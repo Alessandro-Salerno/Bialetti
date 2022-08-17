@@ -17,10 +17,6 @@ public abstract class BialettiUDPServer extends BialettiServer {
      * and sends outgoing replies
      */
     private final BialettiUDPServerSocket serverSocket;
-    /**
-     * The thread that keeps the server alive
-     */
-    private Thread dummyThread;
 
     /**
      * Constructor
@@ -41,7 +37,6 @@ public abstract class BialettiUDPServer extends BialettiServer {
         super.stop();
 
         // Close the server
-        dummyThread.interrupt();
         serverSocket.close();
 
         try { onStop(); }
@@ -57,10 +52,6 @@ public abstract class BialettiUDPServer extends BialettiServer {
     @Override
     protected void start() {
         super.start();
-
-        // Create a dummy thread to keep thee server alive
-        dummyThread = new Thread(() -> { while (!Thread.interrupted()) { } });
-        dummyThread.start();
 
         try { onStart(); }
         catch (Exception e) {

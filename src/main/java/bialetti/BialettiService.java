@@ -20,19 +20,33 @@ public abstract class BialettiService extends BialettiExceptionHandler {
      * The thread used to run the start method
      */
     private final Thread startThread;
+    /**
+     * A thread used to keep the process alive
+     */
+    private final Thread dummyThread;
+    /**
+     * A boolean that tells whether the service has already been started
+     */
+    private boolean started = false;
 
     /**
      * Constructor
      */
     public BialettiService() {
-        threads = new ArrayList<>();
+        // Set up service threads
+        threads     = new ArrayList<>();
         startThread = new Thread(this::start);
+
+        // Set up dummy thread
+        dummyThread = new Thread(() -> { while (!Thread.interrupted()); });
+        dummyThread.start();
     }
 
     /**
      * Starts the thread to run the start method
      */
     protected final void init() {
+        if (started) return;
         startThread.start();
     }
 
@@ -40,6 +54,9 @@ public abstract class BialettiService extends BialettiExceptionHandler {
      * Spawns threads for all methods
      */
     protected void start() {
+        // Do nothing if the service has already been started
+        if (started) return;
+        
         new ObjectUtility(this).forEachMethodWithAnnotation(BialettiHandleMethod.class,
                                                                method -> {
             MethodThread newThread
@@ -58,6 +75,9 @@ public abstract class BialettiService extends BialettiExceptionHandler {
             newThread.start();
             threads.add(newThread);
         });
+        
+        // State that the service has been started
+        started = true;
     }
 
     /**
@@ -72,5 +92,8 @@ public abstract class BialettiService extends BialettiExceptionHandler {
 
             threads.clear();
         }
+
+        // Stop dummy thread
+        dummyThread.interrupt();
     }
 }
