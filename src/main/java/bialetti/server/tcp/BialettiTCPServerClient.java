@@ -2,9 +2,9 @@ package bialetti.server.tcp;
 
 import bialetti.annotations.methods.BialettiEndMethod;
 import bialetti.annotations.methods.BialettiInitMethod;
-import bialetti.service.BialettiManagedService;
 import bialetti.connection.tcp.BialettiTCPConnection;
 import bialetti.exceptions.BialettiIllegalOperationException;
+import bialetti.service.BialettiManagedService;
 
 /**
  * A representation of a client

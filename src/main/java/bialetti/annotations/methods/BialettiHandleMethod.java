@@ -1,7 +1,5 @@
 package bialetti.annotations.methods;
 
-import bialetti.server.tcp.BialettiTCPServerClient;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

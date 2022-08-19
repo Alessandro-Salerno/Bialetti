@@ -3,7 +3,6 @@ package bialetti.util;
 import bialetti.BialettiExceptionHandler;
 import bialetti.annotations.exceptions.BialettiExceptionHandlerMethod;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 

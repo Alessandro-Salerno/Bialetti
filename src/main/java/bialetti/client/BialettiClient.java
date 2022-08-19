@@ -1,7 +1,7 @@
 package bialetti.client;
 
-import bialetti.service.BialettiRunnableService;
 import bialetti.exceptions.BialettiNullAddressException;
+import bialetti.service.BialettiRunnableService;
 
 /**
  * A Bialetti Client

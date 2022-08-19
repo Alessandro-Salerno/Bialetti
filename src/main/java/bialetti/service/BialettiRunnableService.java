@@ -1,9 +1,6 @@
 package bialetti.service;
 
-import bialetti.annotations.methods.BialettiEndMethod;
 import bialetti.exceptions.BialettiIllegalOperationException;
-import bialetti.util.MethodCaller;
-import bialetti.util.ObjectUtility;
 
 /**
  * Subclass of {@link BialettiManagedService}
