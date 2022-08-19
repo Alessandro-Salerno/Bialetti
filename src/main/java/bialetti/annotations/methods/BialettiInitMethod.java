@@ -1,6 +1,4 @@
-package bialetti.annotations;
-
-import bialetti.server.tcp.BialettiTCPServerClient;
+package bialetti.annotations.methods;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,10 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * Marker annotation
- * Makes a method a valid connection handler
- * @apiNote used inside @{@link BialettiTCPServerClient} child classes
+ * Mars a method for execution when a service is started
+ * @apiNote used inside @{@link bialetti.service.BialettiManagedService} child classes
  * @author Alessandro-Salerno
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface BialettiHandleMethod { }
+public @interface BialettiInitMethod { }

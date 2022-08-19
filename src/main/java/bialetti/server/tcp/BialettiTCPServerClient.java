@@ -1,14 +1,17 @@
 package bialetti.server.tcp;
 
-import bialetti.BialettiService;
+import bialetti.annotations.methods.BialettiEndMethod;
+import bialetti.annotations.methods.BialettiInitMethod;
+import bialetti.service.BialettiManagedService;
 import bialetti.connection.tcp.BialettiTCPConnection;
+import bialetti.exceptions.BialettiIllegalOperationException;
 
 /**
  * A representation of a client
  * @param <ServerType> the server class
  * @author Alessandro-Salerno
  */
-public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServer<?>> extends BialettiService {
+public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServer<?>> extends BialettiManagedService {
     /**
      * The connection on which che client runs on
      */
@@ -31,31 +34,14 @@ public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServ
     }
 
     /**
-     * Starts up the client
-     */
-    @Override
-    protected final void start() {
-        super.start();
-
-        try { onConnect(); }
-        catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-        }
-    }
-
-    /**
      * Shuts down the client
+     * @throws BialettiIllegalOperationException if the service was not running when the method was called
      */
     @Override
-    public final void stop() {
+    public final void stop() throws BialettiIllegalOperationException {
         super.stop();
 
-        try {
-            connection.close();
-            onClose();
-        }
-
+        try { connection.close(); }
         catch (Exception e) {
             // Call handler method
             raiseException(e);
@@ -76,11 +62,13 @@ public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServ
      * @apiNote abstract method, should be defined by subclasses
      * @throws Exception if the user code throws one
      */
+    @BialettiInitMethod
     public abstract void onConnect() throws Exception;
     /**
      * What happens when the connection is terminated
      * @apiNote abstract method, should be defined by subclasses
      * @throws Exception if the user code throws one
      */
+    @BialettiEndMethod
     public abstract void onClose() throws Exception;
 }

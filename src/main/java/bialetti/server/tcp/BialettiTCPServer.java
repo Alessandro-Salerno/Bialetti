@@ -1,9 +1,9 @@
 package bialetti.server.tcp;
 
-import bialetti.annotations.BialettiHandleMethod;
+import bialetti.annotations.methods.BialettiHandleMethod;
 import bialetti.connection.tcp.BialettiTCPConnection;
+import bialetti.exceptions.BialettiIllegalOperationException;
 import bialetti.server.BialettiServer;
-import bialetti.util.MethodThread;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -73,9 +73,10 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
     /**
      * Stops the server
+     * @throws BialettiIllegalOperationException if the service was not running when the method was called
      */
     @Override
-    public final void stop() {
+    public final void stop() throws BialettiIllegalOperationException {
         super.stop();
 
         synchronized (activeConnections) {
@@ -86,26 +87,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
             // Clear list of active connections and ensure that no other thread can access it
             activeConnections.clear();
-        }
-
-        try { onStop(); }
-        catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-        }
-    }
-
-    /**
-     * Starts the server
-     */
-    @Override
-    protected final void start() {
-        super.start();
-
-        try { onStart(); }
-        catch (Exception e) {
-            // Call handler method
-            raiseException(e);
         }
     }
 

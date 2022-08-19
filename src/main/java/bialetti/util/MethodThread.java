@@ -69,17 +69,13 @@ public class MethodThread extends Thread {
 
     @Override
     public void run() {
+        MethodCaller caller = new MethodCaller(targetObject, method, methodArguments);
+
         while (!Thread.interrupted()) {
-            try { method.invoke(targetObject, methodArguments); }
-
-            catch (InvocationTargetException e) {
+            try { caller.call(); }
+            catch (Throwable t) {
                 // Call handler method
-                exceptionHandler.raiseException(e.getCause());
-            }
-
-            catch (IllegalAccessException e) {
-                e.printStackTrace();
-                return;
+                exceptionHandler.raiseException(t);
             }
         }
     }

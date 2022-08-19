@@ -1,8 +1,14 @@
 package bialetti.server;
 
-import bialetti.BialettiService;
+import bialetti.annotations.methods.BialettiEndMethod;
+import bialetti.annotations.methods.BialettiInitMethod;
+import bialetti.service.BialettiRunnableService;
 
-public abstract class BialettiServer extends BialettiService {
+/**
+ * A Bialetti Server
+ * @author Alessandro-Salerno
+ */
+public abstract class BialettiServer extends BialettiRunnableService {
     /**
      * The port on which the server is hosted
      */
@@ -22,11 +28,13 @@ public abstract class BialettiServer extends BialettiService {
      * @apiNote abstract method, should be defined by subclasses
      * @throws Exception if the user code throws one
      */
-    protected abstract void onStart() throws Exception;
+    @BialettiInitMethod
+    public abstract void onStart() throws Exception;
     /**
      * What happens when the server is stopped
      * @apiNote abstract method, should be defined by subclasses
      * @throws Exception if the user code throws one
      */
-    protected abstract void onStop() throws Exception;
+    @BialettiEndMethod
+    public abstract void onStop() throws Exception;
 }

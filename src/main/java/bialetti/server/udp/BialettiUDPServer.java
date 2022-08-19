@@ -1,11 +1,8 @@
 package bialetti.server.udp;
 
 import bialetti.connection.udp.BialettiUDPServerSocket;
+import bialetti.exceptions.BialettiIllegalOperationException;
 import bialetti.server.BialettiServer;
-import bialetti.util.MethodThread;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A Bialetti UDP Server
@@ -31,33 +28,14 @@ public abstract class BialettiUDPServer extends BialettiServer {
 
     /**
      * Stops the server
+     * @throws BialettiIllegalOperationException if the service was not running when the method was called
      */
     @Override
-    public final void stop() {
+    public final void stop() throws BialettiIllegalOperationException {
         super.stop();
 
         // Close the server
         serverSocket.close();
-
-        try { onStop(); }
-        catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-        }
-    }
-
-    /**
-     * Starts the server
-     */
-    @Override
-    protected void start() {
-        super.start();
-
-        try { onStart(); }
-        catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-        }
     }
 
     /**
