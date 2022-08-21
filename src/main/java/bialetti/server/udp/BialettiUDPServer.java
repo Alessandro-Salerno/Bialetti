@@ -18,8 +18,9 @@ public abstract class BialettiUDPServer extends BialettiServer {
     /**
      * Constructor
      * @param port the port on which to open the server
+     * @throws RuntimeException if something goes wrong while opening the connection
      */
-    public BialettiUDPServer(int port) {
+    public BialettiUDPServer(int port) throws RuntimeException {
         super(port);
 
         serverSocket = openServerSocket();
@@ -45,16 +46,13 @@ public abstract class BialettiUDPServer extends BialettiServer {
 
     /**
      * @return a {@link BialettiUDPServerSocket} instance
+     * @throws RuntimeException if something goes wrong while opening the connection
      */
-    private BialettiUDPServerSocket openServerSocket() {
-        BialettiUDPServerSocket nSocket;
-        try { nSocket = new BialettiUDPServerSocket(getPort(), 512); }
+    private BialettiUDPServerSocket openServerSocket() throws RuntimeException {
+        try { return new BialettiUDPServerSocket(getPort(), 512); }
         catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-            nSocket = null;
+            // Throw runtime exception
+            throw new RuntimeException(e);
         }
-
-        return nSocket;
     }
 }

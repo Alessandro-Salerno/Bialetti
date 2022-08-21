@@ -53,7 +53,7 @@ abstract class BialettiService extends BialettiExceptionHandler {
      */
     protected void start() throws BialettiIllegalOperationException,
                                   IllegalCallerException {
-        // Make sure that the service is not running);
+        // Make sure that the service is not running
         if (isRunning()) {
             throw new BialettiIllegalOperationException("Service \"" + getClass().getSimpleName() + "\" is already running");
         }

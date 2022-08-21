@@ -43,7 +43,9 @@ public abstract class BialettiExceptionHandler {
      * @param annotation The annotation required for the method to be ok
      * @param ...parameterTypes The types of the required parameters
      */
-    protected final Method getHandlerMethod(Throwable throwable, Class<? extends Annotation> annotation, Class<?>... parameterTypes) throws NoSuchMethodException {
+    protected final Method getHandlerMethod(Throwable throwable,
+                                            Class<? extends Annotation> annotation,
+                                            Class<?>... parameterTypes) throws NoSuchMethodException {
         // Get handler method from the class
         Method handlerMethod = getClass().getMethod("on" + throwable.getClass().getSimpleName(),
                                                     parameterTypes);
@@ -58,6 +60,6 @@ public abstract class BialettiExceptionHandler {
 
     @BialettiExceptionHandlerMethod
     public void onThrowable(Throwable throwable) {
-        throwable.printStackTrace();
+        throw new RuntimeException(throwable);
     }
 }

@@ -31,8 +31,6 @@ public abstract class BialettiClient extends BialettiRunnableService {
 
         serverAddress = address;
         serverPort    = port;
-
-        init();
     }
 
     /**

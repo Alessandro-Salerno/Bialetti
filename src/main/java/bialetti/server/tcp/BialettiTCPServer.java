@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Bialetti TCP Server
@@ -28,14 +29,15 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
     /**
      * Constructor
-     * @param port the port on which the server liste
+     * @param port the port on which the server listens
+     * @throws RuntimeException if something goes wrong while initializing the server's socket
      */
-    public BialettiTCPServer(int port) {
+    public BialettiTCPServer(int port) throws RuntimeException {
         super(port);
 
         // Set fields
         activeConnections = new ArrayList<>();
-        serverSocket = openServerSocket();
+        serverSocket      = openServerSocket();
 
         init();
     }
@@ -51,7 +53,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
             BialettiServerConnection newConnection = new BialettiServerConnection(serverSocket.accept());
 
             // Append client to the list of connected clients
-            activeConnections.add(newConnection);
+            synchronized (activeConnections) { activeConnections.add(newConnection); }
         }
 
         // Exception handler
@@ -66,9 +68,12 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
      * @param message the message to be broadcast
      */
     public void broadcast(String message) {
-        activeConnections.stream()
-                          .parallel()
-                          .forEach(conn -> conn.send(message));
+        synchronized (activeConnections) {
+            activeConnections.stream()
+                              .parallel()
+                              .filter(Objects::nonNull)
+                              .forEach(conn -> conn.send(message));
+        }
     }
 
     /**
@@ -99,17 +104,14 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
     /**
      * @return a {@link ServerSocket} instance
+     * @throws RuntimeException if something goes wrong while opening the connection
      */
-    private ServerSocket openServerSocket() {
-        ServerSocket nServer;
-        try { nServer = new ServerSocket(getPort()); }
+    private ServerSocket openServerSocket() throws RuntimeException {
+        try { return new ServerSocket(getPort()); }
         catch (Exception e) {
-            // Call handler method
-            raiseException(e);
-            nServer = null;
+            // Throw runtime exception
+            throw new RuntimeException(e);
         }
-
-        return nServer;
     }
 
     /**
@@ -139,8 +141,8 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         @Override
         public void close() {
             synchronized (activeConnections) {
-                justClose();
                 activeConnections.remove(this);
+                justClose();
             }
         }
 

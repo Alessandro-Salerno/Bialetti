@@ -17,17 +17,9 @@ public class MethodThread extends Thread {
      */
     private final BialettiExceptionHandler exceptionHandler;
     /**
-     * The object on which the method will be called
+     * Caller utility
      */
-    private final Object targetObject;
-    /**
-     * The method t be called
-     */
-    private final Method method;
-    /**
-     * The arguments with which the method will be called
-     */
-    private final Object[] methodArguments;
+    private final MethodCaller caller;
 
     /**
      * Constructor
@@ -41,9 +33,7 @@ public class MethodThread extends Thread {
                         Method m,
                         Object... args) {
         exceptionHandler = eh;
-        targetObject     = target;
-        method           = m;
-        methodArguments  = args;
+        caller           = new MethodCaller(target, m, args);
     }
 
     /**
@@ -68,8 +58,6 @@ public class MethodThread extends Thread {
 
     @Override
     public void run() {
-        MethodCaller caller = new MethodCaller(targetObject, method, methodArguments);
-
         while (!Thread.interrupted()) {
             try { caller.call(); }
             catch (Throwable t) {
