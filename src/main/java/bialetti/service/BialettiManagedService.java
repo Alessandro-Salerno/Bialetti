@@ -11,7 +11,7 @@ import bialetti.util.ObjectUtility;
  * A Bialetti Service that also calls init and end methods
  * @author Alessandro-Salerno
  */
-public class BialettiManagedService extends BialettiService {
+public class BialettiManagedService extends BialettiService implements Runnable {
     @Override
     protected void start() throws BialettiIllegalOperationException {
         super.start();
@@ -42,5 +42,14 @@ public class BialettiManagedService extends BialettiService {
                 raiseException(t);
             }
         });
+    }
+
+    /**
+     * Starts the managed service
+     * Calls BialettiService.init() and thus the start method
+     */
+    @Override
+    public void run() {
+        init();
     }
 }

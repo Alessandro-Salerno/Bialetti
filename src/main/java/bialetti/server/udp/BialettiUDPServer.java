@@ -13,7 +13,7 @@ public abstract class BialettiUDPServer extends BialettiServer {
      * The socket on which the server listens for incoming requests
      * and sends outgoing replies
      */
-    private final BialettiUDPServerSocket serverSocket;
+    private BialettiUDPServerSocket serverSocket;
 
     /**
      * Constructor
@@ -22,9 +22,6 @@ public abstract class BialettiUDPServer extends BialettiServer {
      */
     public BialettiUDPServer(int port) throws RuntimeException {
         super(port);
-
-        serverSocket = openServerSocket();
-        init();
     }
 
     /**
@@ -42,17 +39,20 @@ public abstract class BialettiUDPServer extends BialettiServer {
     /**
      * @return the UDP connection used by the server
      */
-    public BialettiUDPServerSocket getConnection() { return serverSocket; }
+    public BialettiUDPServerSocket getSocket() { return serverSocket; }
 
     /**
-     * @return a {@link BialettiUDPServerSocket} instance
+     * Starts the server
      * @throws RuntimeException if something goes wrong while opening the connection
      */
-    private BialettiUDPServerSocket openServerSocket() throws RuntimeException {
-        try { return new BialettiUDPServerSocket(getPort(), 512); }
+    @Override
+    public void run() {
+        try { serverSocket = new BialettiUDPServerSocket(getPort(), 512); }
         catch (Exception e) {
             // Throw runtime exception
             throw new RuntimeException(e);
         }
+
+        super.run();
     }
 }

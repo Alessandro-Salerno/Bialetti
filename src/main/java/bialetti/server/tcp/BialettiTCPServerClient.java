@@ -29,8 +29,6 @@ public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServ
     public BialettiTCPServerClient(BialettiTCPConnection c, ServerType s) {
         connection = c;
         server     = s;
-
-        init();
     }
 
     /**

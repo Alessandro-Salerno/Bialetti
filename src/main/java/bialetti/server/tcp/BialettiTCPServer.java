@@ -25,7 +25,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
     /**
      * The socket on which the server listens for new connections
      */
-    private final ServerSocket serverSocket;
+    private ServerSocket serverSocket;
 
     /**
      * Constructor
@@ -37,9 +37,6 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
 
         // Set fields
         activeConnections = new ArrayList<>();
-        serverSocket      = openServerSocket();
-
-        init();
     }
 
     /**
@@ -103,15 +100,18 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
     protected abstract ClientType getNewClient(BialettiTCPConnection bialettiTCPConnection);
 
     /**
-     * @return a {@link ServerSocket} instance
+     * Starts the server
      * @throws RuntimeException if something goes wrong while opening the connection
      */
-    private ServerSocket openServerSocket() throws RuntimeException {
-        try { return new ServerSocket(getPort()); }
+    @Override
+    public void run() throws RuntimeException {
+        try { serverSocket=  new ServerSocket(getPort()); }
         catch (Exception e) {
             // Throw runtime exception
             throw new RuntimeException(e);
         }
+
+        super.run();
     }
 
     /**
@@ -133,6 +133,7 @@ public abstract class BialettiTCPServer<ClientType extends BialettiTCPServerClie
         public BialettiServerConnection(Socket socket) throws IOException {
             super(socket);
             client = getNewClient(this);
+            client.run();
         }
 
         /**

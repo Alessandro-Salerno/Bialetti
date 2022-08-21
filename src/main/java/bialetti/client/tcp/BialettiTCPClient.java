@@ -2,10 +2,18 @@ package bialetti.client.tcp;
 
 import bialetti.client.BialettiClient;
 import bialetti.connection.tcp.BialettiTCPConnection;
+import bialetti.exceptions.BialettiIllegalOperationException;
 import bialetti.exceptions.BialettiNullAddressException;
 
+/**
+ * A Bialetti TCP Client
+ * @author Alessandro-Salerno
+ */
 public abstract class BialettiTCPClient extends BialettiClient {
-    protected final BialettiTCPConnection connection;
+    /**
+     * The connection to the server
+     */
+    private BialettiTCPConnection connection;
 
     /**
      * Constructor
@@ -16,21 +24,36 @@ public abstract class BialettiTCPClient extends BialettiClient {
      */
     public BialettiTCPClient(String address, int port) throws BialettiNullAddressException {
         super(address, port);
-        connection = openConnection();
+    }
 
-        init();
+    @Override
+    public void stop() throws RuntimeException,
+                              BialettiIllegalOperationException {
+        super.stop();
+
+        try { connection.close(); }
+        catch (Exception e) {
+            // Throw a runtime exception
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * Open the connection
-     * @return A {@link BialettiTCPConnection} instance
-     * @throws RuntimeException if something goes wrong while opening the connection
+     * Creates the connection and calls super.run()
      */
-    private BialettiTCPConnection openConnection() throws RuntimeException {
-        try { return new BialettiTCPConnection(getServerAddress(), getServerPort());  }
+    @Override
+    public void run() {
+        try { connection = new BialettiTCPConnection(getServerAddress(), getServerPort());  }
         catch (Exception e) {
             // Throw exception
             throw new RuntimeException(e);
         }
+
+        super.run();
     }
+
+    /**
+     * @return the client's {@link BialettiTCPConnection}
+     */
+    public BialettiTCPConnection getConnection() { return connection; }
 }
