@@ -29,17 +29,6 @@ As such, you just need to choose the `jar` task in Gradle (Either via the comman
 ## How to use the library
 To use Bialetti, you're going to need to import the `jar` file and the `bialetti` package.
 
-### Creating a simple server application
-To create a server application, you're going to need the following components:
-* A `BialettiServer` child-class
-* A Client Representation
-* A Connection Event Handler
-* A Server Event Handler
-* An Exception Handler
-
-Bialetti provides easy-to-use interfaces and classes for each of these.
-Up-to-date documentation will be provided soon.
-
 <!-- LICENSE -->
 
 ## License
