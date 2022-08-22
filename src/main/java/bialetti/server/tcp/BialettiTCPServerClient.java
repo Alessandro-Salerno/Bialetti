@@ -15,11 +15,11 @@ public abstract class BialettiTCPServerClient<ServerType extends BialettiTCPServ
     /**
      * The connection on which che client runs on
      */
-    protected final BialettiTCPConnection connection;
+    private final BialettiTCPConnection connection;
     /**
      * The server handling the connection
      */
-    protected final ServerType server;
+    private final ServerType server;
 
     /**
      * Constructor
