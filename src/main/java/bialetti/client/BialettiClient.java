@@ -1,5 +1,7 @@
 package bialetti.client;
 
+import bialetti.annotations.methods.BialettiEndMethod;
+import bialetti.annotations.methods.BialettiInitMethod;
 import bialetti.exceptions.BialettiNullAddressException;
 import bialetti.service.BialettiRunnableService;
 
@@ -32,6 +34,17 @@ public abstract class BialettiClient extends BialettiRunnableService {
         serverAddress = address;
         serverPort    = port;
     }
+
+    /**
+     * What happens when the client is started
+     */
+    @BialettiInitMethod
+    public abstract void onStart();
+    /**
+     * What happens when the client is stopped
+     */
+    @BialettiEndMethod
+    public abstract  void onStop();
 
     /**
      * @return the host address of the target server in string form

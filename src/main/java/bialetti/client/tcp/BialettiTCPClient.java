@@ -26,6 +26,9 @@ public abstract class BialettiTCPClient extends BialettiClient {
         super(address, port);
     }
 
+    /**
+     * Stops the client
+     */
     @Override
     public void stop() throws RuntimeException,
                               BialettiIllegalOperationException {
@@ -42,7 +45,7 @@ public abstract class BialettiTCPClient extends BialettiClient {
      * Creates the connection and calls super.run()
      */
     @Override
-    public void run() {
+    public void run() throws RuntimeException {
         try { connection = new BialettiTCPConnection(getServerAddress(), getServerPort());  }
         catch (Exception e) {
             // Throw exception
