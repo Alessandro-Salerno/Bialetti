@@ -11,7 +11,7 @@
 <h1 align="center">Bialetti</h1>
 
   <p align="center">
-    Bialetti is a Java networking library meant to abstract away some of the lower level parts of using TCP Sockets.
+    Bialetti is a Java networking library/framework meant to abstract away some of the lower level parts of using TCP/UDP Sockets to create server-side and client-side applications.
     <br />
     <br />
     <a href="https://github.com/Alessandro-Salerno/Bialetti/issues">Report Bug</a> ||
@@ -22,12 +22,17 @@
   <img src=".github/Bialetti.png" alt="Snow" width="900">
 </div>
 
+## Why Bialetti?
+[Alfonso Bialetti](https://it.wikipedia.org/wiki/Alfonso_Bialetti) was the original creator of the [Moka](https://it.wikipedia.org/wiki/Moka), so obviously, Java -> Coffee.
+
 ## How to build the JAR File
 Bialetti uses [Gradle](https://gradle.org) as its build system.
 As such, you just need to choose the `jar` task in Gradle (Either via the commandline or your IDE of choice) and get the output in `build/libs`.
 
 ## How to use the library
 To use Bialetti, you're going to need to import the `jar` file and the `bialetti` package.
+<br>
+The documentation for Bialetti can be found on the [Wiki](https://github.com/Alessandro-Salerno/Bialetti/wiki)
 
 <!-- LICENSE -->
 
