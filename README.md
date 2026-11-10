@@ -1,3 +1,6 @@
+> [!WARNING]
+> This repo has received an unexpected "surge" in star count on November 10, 2026. It is important that all viewers of this page take note of the fact that **this repository was originally archived on December 1, 2025 and will continue being read-only into the future.** This library is not properly tested, and was designed and implemented in 2022 as a quick holiday pastime. **Use it at your own risk, and adopt more established alternatives if possible.** I will not be maintaining this project, and I would not use it myself, especially if parallel correctness is a concern. Since you're at it, why not check out [my profile and some of my other projects](https://github.com/Alessandro-Salerno) instead?
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
